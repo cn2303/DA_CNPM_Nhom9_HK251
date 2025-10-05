@@ -1,29 +1,69 @@
-**ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH**
+<div align="center">
 
-**TRƯỜNG ĐẠI HỌC BÁCH KHOA**
+<b>ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH</b><br>
+<b>TRƯỜNG ĐẠI HỌC BÁCH KHOA</b>
 
-![anh](image.png)
+<p align="center">
+  <img src="HCMUT.jpg" alt="Logo" width="150">
+</p>
 
-**ĐỒ ÁN TỔNG HỢP - HƯỚNG CÔNG NGHỆ PHẦN MỀM**
+<b>ĐỒ ÁN TỔNG HỢP - HƯỚNG CÔNG NGHỆ PHẦN MỀM</b><br>
+<b>NHÓM: 9 - HK 251</b><br>
+<b>GVHD: TS. LÊ XUÂN BÁCH</b>
 
-**NHÓM: 9** **- HK 251**
+<br><br>
 
-**GVHD: TS. LÊ XUÂN BÁCH**
+<table>
+  <tr>
+    <th>STT</th>
+    <th>MSSV</th>
+    <th>HỌ</th>
+    <th>TÊN</th>
+    <th>BIỆT DANH</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>2310365</td>
+    <td>Nguyễn Chu Nguyên</td>
+    <td>Chương</td>
+    <td>9A</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>2311142</td>
+    <td>Hoàng Thế</td>
+    <td>Huy</td>
+    <td>9B</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>2211190</td>
+    <td>Lê Huỳnh</td>
+    <td>Huy</td>
+    <td>9C</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>2311191</td>
+    <td>Nguyễn Mạnh</td>
+    <td>Huy</td>
+    <td>9D</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>2311289</td>
+    <td>Ngô Thanh</td>
+    <td>Hùng</td>
+    <td>9E</td>
+  </tr>
+</table>
 
-| **STT** | **MSSV** | **HỌ** | **TÊN** | **BIỆT DANH** |
-| --- | --- | --- | --- | --- |
-| 1   | 2310365 | Nguyễn Chu Nguyên | Chương | 9A  |
-| --- | --- | --- | --- | --- |
-| 2   | 2311142 | Hoàng Thế | Huy | 9B  |
-| --- | --- | --- | --- | --- |
-| 3   | 2211190 | Lê Huỳnh | Huy | 9C  |
-| --- | --- | --- | --- | --- |
-| 4   | 2311191 | Nguyễn Mạnh | Huy | 9D  |
-| --- | --- | --- | --- | --- |
-| 5   | 2311289 | Ngô Thanh | Hùng | 9E  |
-| --- | --- | --- | --- | --- |
+<br>
 
-**TP. HỒ CHÍ MINH, THÁNG 9 - NĂM 2025**
+<b>TP. HỒ CHÍ MINH, THÁNG 9 - NĂM 2025</b>
+
+</div>
+
 
 **ĐỀ TÀI**
 

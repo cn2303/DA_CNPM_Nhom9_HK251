@@ -1,0 +1,200 @@
+:root {
+  --accent: #1f6feb;
+  --muted: #666;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #f7f8fb;
+  color: #111;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+header, footer { text-align: center; padding: 16px 0; }
+header h1 { margin: 0; color: var(--accent); }
+nav { margin-top: 8px; font-size: 14px; color: var(--muted); }
+.book-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); margin-top: 24px; }
+.card { background: #fff; border-radius: 10px; padding: 12px; box-shadow: 0 6px 18px rgba(20,20,50,0.06); }
+.card img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; }
+.card h3 { margin: 8px 0 4px; font-size: 16px; }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+/* Custom BookStore Styles */
+body {
+  background: #F9FAFB;
+}
+
+.bookstore-header {
+  width: 100%;
+  height: 73px;
+  position: relative;
+  background: #fff;
+  border-bottom: 0.8px rgba(0,0,0,0.10) solid;
+  z-index: 10;
+}
+.bookstore-header-content {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+.bookstore-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 194px;
+}
+.bookstore-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #155DFC 0%, #9810FA 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 6px -4px rgba(0,0,0,0.10);
+}
+.bookstore-logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+  display: inline-block;
+}
+.bookstore-logo-text {
+  color: #101828;
+  font-size: 36px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+.bookstore-actions {
+  display: flex;
+  gap: 16px;
+  position: absolute;
+  right: 80px;
+}
+.bookstore-login-btn {
+  background: #030213;
+  color: #fff;
+  border-radius: 8px;
+  border: none;
+  padding: 8px 32px 8px 36px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bookstore-cart-btn {
+  background: #fff;
+  color: #0A0A0A;
+  border-radius: 8px;
+  border: 0.8px solid rgba(0,0,0,0.10);
+  padding: 8px 32px 8px 36px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bookstore-cart-badge {
+  background: #FB2C36;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 12px;
+  padding: 2px 8px;
+  position: absolute;
+  right: 8px;
+  top: -8px;
+}
+.bookstore-nav {
+  width: 100%;
+  height: 73px;
+  background: #1F3F9F;
+  box-shadow: 0px 4px 4px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+.bookstore-search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 8px 0 0 8px;
+  padding: 4px 12px;
+  font-size: 14px;
+  color: #717182;
+  font-family: 'Arimo', sans-serif;
+  width: 320px;
+}
+.bookstore-search-btn {
+  background: #2B7FFF;
+  color: #fff;
+  border-radius: 0 8px 8px 0;
+  border: none;
+  padding: 8px 24px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  cursor: pointer;
+  margin-left: -4px;
+}
+.bookstore-footer {
+  width: 100%;
+  background: #1F3F9F;
+  color: #BEDBFF;
+  padding: 32px 0 0 0;
+  margin-top: 64px;
+}
+.bookstore-footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 32px;
+  justify-content: space-between;
+}
+.bookstore-footer-section {
+  flex: 1;
+}
+.bookstore-footer-title {
+  color: #fff;
+  font-size: 18px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+.bookstore-footer-link {
+  color: #BEDBFF;
+  font-size: 16px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  display: block;
+  margin-bottom: 8px;
+  text-decoration: none;
+}
+.bookstore-footer-copyright {
+  text-align: center;
+  color: #8EC5FF;
+  font-size: 16px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  border-top: 0.8px #193CB8 solid;
+  margin-top: 32px;
+  padding: 16px 0 0 0;
+}

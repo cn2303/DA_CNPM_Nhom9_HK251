@@ -28,6 +28,7 @@ public class Order {
     private Voucher voucher;
     @OneToOne
     private Payment payment;
-
+    //xem lai
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<OrderItem> orderItemList = new ArrayList<>();
 }

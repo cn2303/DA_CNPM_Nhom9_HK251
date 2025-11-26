@@ -16,12 +16,12 @@ import java.util.Date;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String transactionCode;
     private LocalDateTime paidAt;
     private PaymentStatus payStatus;
-    private double amount;
+    private int amount;
     private String gateWay;
     private String Response;
 }

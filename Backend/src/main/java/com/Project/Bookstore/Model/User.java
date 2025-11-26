@@ -1,9 +1,6 @@
 package com.Project.Bookstore.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,5 +22,7 @@ public class User {
     private String password;
     private String phone;
     private Date birthday;
+
+    @Enumerated(EnumType.STRING)
     private ROLE role;
 }

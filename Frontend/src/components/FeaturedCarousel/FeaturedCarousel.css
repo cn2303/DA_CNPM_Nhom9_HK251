@@ -1,0 +1,127 @@
+.featured-carousel {
+  background: linear-gradient(180deg, #EFF6FF 0%, white 100%);
+  border-radius: 10px;
+  padding: 32px;
+  box-shadow: none;
+}
+
+.carousel-title {
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Arimo', sans-serif;
+  color: #1447E6;
+  text-align: center;
+  margin-bottom: 24px;
+  line-height: 24px;
+}
+
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  overflow: hidden;
+}
+
+.carousel-track {
+  position: relative;
+  width: 100%;
+  max-width: 624px;
+  height: 152px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.carousel-slide {
+  position: absolute;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.carousel-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.carousel-slide img {
+  width: 114px;
+  height: 152px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0px 4px 6px -4px rgba(0, 0, 0, 0.10);
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.80);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0A0A0A;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.carousel-arrow:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.carousel-arrow.left {
+  left: 0;
+}
+
+.carousel-arrow.right {
+  right: 0;
+}
+
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 26843500px;
+  border: none;
+  background-color: #D1D5DC;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  background-color: #155DFC;
+  width: 32px;
+  border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .carousel-arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .carousel-arrow.left {
+    left: -10px;
+  }
+
+  .carousel-arrow.right {
+    right: -10px;
+  }
+}

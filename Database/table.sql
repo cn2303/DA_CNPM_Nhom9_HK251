@@ -61,15 +61,15 @@ CREATE TABLE Book (
     AvgRating DECIMAL(3, 2) DEFAULT 0.0,
     AuthorName VARCHAR(255),
     AuthorBio TEXT,
-    PublisherName VARCHAR(255)
+    PublisherName VARCHAR(255),
+    image_url VARCHAR(255) -- URL ảnh (Cloudinary)
 );
 
--- 6. Bảng trung gian BookCategory (Có ID riêng)
+-- 6. Bảng trung gian BookCategory 
 CREATE TABLE BookCategory (
-    BookCategoryID SERIAL PRIMARY KEY,
     BookID INT NOT NULL,
     CategoryID INT NOT NULL,
-    UNIQUE (BookID, CategoryID),
+    CONSTRAINT pk_bookcategory PRIMARY KEY (BookID, CategoryID),
     CONSTRAINT fk_bc_book FOREIGN KEY (BookID) REFERENCES Book(BookID),
     CONSTRAINT fk_bc_category FOREIGN KEY (CategoryID) REFERENCES Category(CategoryID)
 );
@@ -86,24 +86,23 @@ CREATE TABLE Review (
     CONSTRAINT fk_review_book FOREIGN KEY (BookID) REFERENCES Book(BookID)
 );
 
--- 8. Bảng trung gian CartItem (Có ID riêng)
+-- 8. Bảng trung gian CartItem 
 CREATE TABLE CartItem (
-    CartItemID SERIAL PRIMARY KEY,
     CartID INT NOT NULL,
     BookID INT NOT NULL,
     Quantity INT NOT NULL DEFAULT 1,
-    UNIQUE (CartID, BookID),
+    CONSTRAINT pk_cartitem PRIMARY KEY (CartID, BookID),
     CONSTRAINT fk_ci_cart FOREIGN KEY (CartID) REFERENCES Cart(CartID),
     CONSTRAINT fk_ci_book FOREIGN KEY (BookID) REFERENCES Book(BookID)
 );
 
 -- ====================================================
--- 3. NHÓM VOUCHER & ĐƠN HÀNG (NGOẠI LỆ VOUCHER STRING)
+-- 3. NHÓM VOUCHER & ĐƠN HÀNG
 -- ====================================================
 
--- 9. Bảng Voucher (NGOẠI LỆ: Dùng Code làm PK)
+-- 9. Bảng Voucher 
 CREATE TABLE Voucher (
-    Code VARCHAR(50) PRIMARY KEY, -- String làm khóa chính theo yêu cầu
+    Code VARCHAR(50) PRIMARY KEY, 
     Description TEXT,
     Start DATE NOT NULL,
     "End" DATE NOT NULL,
@@ -115,7 +114,7 @@ CREATE TABLE Voucher (
     CONSTRAINT fk_voucher_user FOREIGN KEY (UserID) REFERENCES "User"(UserID)
 );
 
--- 10. Bảng Order (Dùng VoucherCode string)
+-- 10. Bảng Order 
 CREATE TABLE "Order" (
     OrderID SERIAL PRIMARY KEY,
     OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -131,14 +130,13 @@ CREATE TABLE "Order" (
     CONSTRAINT fk_order_voucher FOREIGN KEY (VoucherCode) REFERENCES Voucher(Code)
 );
 
--- 11. Bảng trung gian OrderItem (Có ID riêng)
+-- 11. Bảng OrderItem 
 CREATE TABLE OrderItem (
-    OrderItemID SERIAL PRIMARY KEY,
     OrderID INT NOT NULL,
     BookID INT NOT NULL,
     Quantity INT NOT NULL,
     LineTotalPrice DECIMAL(15, 2) NOT NULL,
-    UNIQUE (OrderID, BookID),
+    CONSTRAINT pk_orderitem PRIMARY KEY (OrderID, BookID),
     CONSTRAINT fk_oi_order FOREIGN KEY (OrderID) REFERENCES "Order"(OrderID),
     CONSTRAINT fk_oi_book FOREIGN KEY (BookID) REFERENCES Book(BookID)
 );

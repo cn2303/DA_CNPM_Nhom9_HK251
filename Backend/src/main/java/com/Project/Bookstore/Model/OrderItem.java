@@ -1,24 +1,34 @@
 package com.Project.Bookstore.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Entity
+@Table(name = "orderitem")
 @Data
 public class OrderItem {
-    @EmbeddedId
-    private OrderItemId id;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "orderitemid")
+    private Integer orderItemId;
+
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
+    @Column(name = "linetotalprice", precision = 12, scale = 2)
+    private BigDecimal lineTotalPrice;
+
+    @JsonIgnore
     @ManyToOne
-    @MapsId("id")
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "orderid", nullable = false)
     private Order order;
 
+    @JsonIgnore
     @ManyToOne
-    @MapsId("id")
-    @JoinColumn(name = "book_id")
+    @JoinColumn(name = "bookid", nullable = false)
     private Book book;
-
-    private int quantity;
-
 }

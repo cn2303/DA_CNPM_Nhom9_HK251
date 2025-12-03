@@ -1,27 +1,42 @@
 package com.Project.Bookstore.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
 
-import java.net.http.HttpResponse;
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
+@Table(name = "payment")
 @Data
 public class Payment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "paymentid")
+    private Integer paymentId;
 
+    @Column(name = "transactioncode", length = 100)
     private String transactionCode;
+
+    @Column(name = "gatewayresponse", columnDefinition = "TEXT")
+    private String gatewayResponse;
+
+    @Column(name = "paidat")
     private LocalDateTime paidAt;
-    private PaymentStatus payStatus;
-    private int amount;
-    private String gateWay;
-    private String Response;
+
+    @Column(name = "paystatus", length = 50)
+    private String payStatus;
+
+    @Column(name = "gateway", length = 50)
+    private String gateway;
+
+    @Column(name = "amount", precision = 12, scale = 2)
+    private BigDecimal amount;
+
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "orderid", nullable = false)
+    private Order order;
 }

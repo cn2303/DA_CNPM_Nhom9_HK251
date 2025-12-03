@@ -1,34 +1,68 @@
 package com.Project.Bookstore.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
+@Table(name = "\"Order\"")
 @Data
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "orderid")
+    private Integer orderId;
 
-    private OrderStatus status;
+    @Column(name = "orderdate")
     private LocalDateTime orderDate;
-    private int shippingFee;
-    private int discount;
-    private List<Book> bookList;
+
+    @Column(name = "paymentmethod", length = 50)
+    private String paymentMethod;
+
+    @Column(name = "currentstatus", length = 50)
+    private String currentStatus;
+
+    @Column(name = "shippingfee", precision = 12, scale = 2)
+    private BigDecimal shippingFee;
+
+    @Column(name = "subtotalprice", precision = 12, scale = 2)
+    private BigDecimal subTotalPrice;
+
+    @Column(name = "discounttotal", precision = 12, scale = 2)
+    private BigDecimal discountTotal;
+
+    @Column(name = "grandtotalprice", precision = 12, scale = 2)
+    private BigDecimal grandTotalPrice;
+
+    @JsonIgnore
     @ManyToOne
-    private Customer customer;
-    @OneToOne
-    private OrderAddress orderAddress;
+    @JoinColumn(name = "userid", nullable = false)
+    private User user;
+
+    @JsonIgnore
     @ManyToOne
+    @JoinColumn(name = "vouchercode")
     private Voucher voucher;
-    @OneToOne
+
+    // Relationships
+    @JsonIgnore
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> orderItems;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private OrderAddress orderAddress;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderStatusHistory> orderStatusHistories;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
-    //xem lai
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,  orphanRemoval = true)
-    private List<OrderItem> orderItemList = new ArrayList<>();
 }

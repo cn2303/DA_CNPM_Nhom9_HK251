@@ -1,26 +1,50 @@
 package com.Project.Bookstore.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.List;
 
 @Entity
+@Table(name = "voucher")
 @Data
 public class Voucher {
+
     @Id
-    private Long code;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private int percent;
-    private int maxValue;
-    private int minValue;
-    private  int quantity;
+    @Column(name = "code", length = 50)
+    private String code;
+
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "start")
+    private LocalDate start;
+
+    @Column(name = "\"End\"")
+    private LocalDate end;
+
+    @Column(name = "quantity")
+    private Integer quantity;
+
+    @Column(name = "minordervalue", precision = 12, scale = 2)
+    private BigDecimal minOrderValue;
+
+    @Column(name = "maxordervalue", precision = 12, scale = 2)
+    private BigDecimal maxOrderValue;
+
+    @Column(name = "percent", precision = 5, scale = 2)
+    private BigDecimal percent;
+
+    @JsonIgnore
     @ManyToOne
-    private Admin admin;
+    @JoinColumn(name = "userid")
+    private User user;
+
+    // Relationships
+    @JsonIgnore
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
+    private List<Order> orders;
 }

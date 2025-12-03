@@ -1,18 +1,33 @@
 package com.Project.Bookstore.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Table(name = "orderaddress")
+@Data
 public class OrderAddress {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "orderaddrid")
+    private Integer orderAddrId;
 
-    private String ward;
+    @Column(name = "city", length = 100)
     private String city;
+
+    @Column(name = "ward", length = 100)
+    private String ward;
+
+    @Column(name = "addressdetail", length = 255)
     private String addressDetail;
+
+    @Column(name = "phone", length = 20)
     private String phone;
+
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "orderid", nullable = false)
+    private Order order;
 }

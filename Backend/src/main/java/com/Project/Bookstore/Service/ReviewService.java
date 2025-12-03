@@ -9,16 +9,27 @@ import java.util.List;
 
 @Service
 public class ReviewService {
+
     private final ReviewRepository reviewRepository;
+
     @Autowired
     public ReviewService(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
     }
-    public Review saveReview(Review review) {
-        return this.reviewRepository.save(review);
-    }
-    public void deleteReview(Long id) {
-        this.reviewRepository.deleteById(id);
+
+    public List<Review> getReviewsByBookId(Integer bookId) {
+        return reviewRepository.findByBook_BookId(bookId);
     }
 
+    public List<Review> getAllReviews() {
+        return reviewRepository.findAll();
+    }
+
+    public Review saveReview(Review review) {
+        return reviewRepository.save(review);
+    }
+
+    public void deleteReview(Integer id) {
+        reviewRepository.deleteById(id);
+    }
 }

@@ -9,21 +9,27 @@ import java.util.List;
 
 @Service
 public class AddressService {
+
     private final AddressRepository addressRepository;
+
     @Autowired
     public AddressService(AddressRepository addressRepository) {
         this.addressRepository = addressRepository;
     }
+
     public List<Address> findAll() {
-        return this.addressRepository.findAll();
+        return addressRepository.findAll();
     }
-    public Address findById(Long id) {
-        return this.addressRepository.findById(id).orElse(null);
+
+    public Address findById(Integer id) {
+        return addressRepository.findById(id).orElse(null);
     }
-    public void deleteById(Long id) {
-        this.addressRepository.deleteById(id);
+
+    public void deleteById(Integer id) {
+        addressRepository.deleteById(id);
     }
+
     public Address saveAddress(Address address) {
-        return this.addressRepository.save(address);
+        return addressRepository.save(address);
     }
 }

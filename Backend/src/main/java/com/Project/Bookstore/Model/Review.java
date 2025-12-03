@@ -1,23 +1,37 @@
 package com.Project.Bookstore.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
+@Table(name = "review")
 @Data
 public class Review {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "reviewid")
+    private Integer reviewId;
 
-    private LocalDateTime createdAt;
+    @Column(name = "rating")
+    private Integer rating;
+
+    @Column(name = "comment", columnDefinition = "TEXT")
     private String comment;
-    private int star;
+
+    @Column(name = "createdat")
+    private LocalDateTime createdAt;
+
+    @JsonIgnore
     @ManyToOne
-    private Customer customer;
+    @JoinColumn(name = "userid", nullable = false)
+    private User user;
+
+    @JsonIgnore
     @ManyToOne
+    @JoinColumn(name = "bookid", nullable = false)
     private Book book;
 }

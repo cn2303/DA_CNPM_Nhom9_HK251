@@ -2,8 +2,11 @@ package com.Project.Bookstore.Repository;
 
 import com.Project.Bookstore.Model.Voucher;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
-public interface VoucherRepository extends JpaRepository<Voucher, Long> {
+import java.util.Optional;
+
+@Repository
+public interface VoucherRepository extends JpaRepository<Voucher, String> {
+    Optional<Voucher> findByCode(String code);
 }

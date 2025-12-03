@@ -4,7 +4,6 @@ Tài liệu này mô tả công việc tích hợp PostgreSQL với Backend Spri
 
 **Ngày cập nhật:** 03/12/2025  
 **Branch:** `feature/update-code`  
-**Người thực hiện:** Database & JPA/Hibernate Developer
 
 ---
 
@@ -15,7 +14,6 @@ Tài liệu này mô tả công việc tích hợp PostgreSQL với Backend Spri
 Ban đầu, tôi tạo các entity theo hướng **Hibernate tự tạo bảng** (ddl-auto=create):
 - `Book.java`: id là Long, author/publisher là object riêng
 - `User.java`: role là enum ROLE
-- Quan hệ Category: @OneToMany trong Book
 
 ### Giai đoạn 2: Chuyển sang SQL Schema cố định
 Theo yêu cầu nhóm, chuyển sang sử dụng SQL schema cố định:

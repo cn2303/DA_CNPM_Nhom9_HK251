@@ -8,27 +8,6 @@ Tài liệu này mô tả công việc tích hợp PostgreSQL với Backend Spri
 
 ---
 
-## 📋 Phạm Vi Công Việc
-
-### ✅ Thuộc nhiệm vụ của tôi:
-| Công việc | Mô tả |
-|-----------|-------|
-| **SQL Database** | Thiết kế và tạo schema trong `Database/table.sql` |
-| **Sample Data** | Dữ liệu mẫu trong `Database/data_sample.sql` |
-| **JPA Entity Mapping** | Tất cả file trong `Model/` - map Java class với DB tables |
-| **Repository Interfaces** | Tất cả file trong `Repository/` - query methods |
-| **Hibernate Configuration** | `application.properties` - kết nối DB |
-| **Filter/Search Query** | Native query trong `BookRepository.java` |
-
-### ❌ KHÔNG thuộc nhiệm vụ của tôi:
-| Công việc | Thuộc về |
-|-----------|----------|
-| Controller endpoints | Controller Developer |
-| Service business logic | Service Developer |
-| Frontend integration | Frontend Developer |
-| Security/Auth | Security Developer |
-
----
 
 ## 1. Quá Trình Phát Triển
 
@@ -334,18 +313,3 @@ GET http://localhost:8080/api/carts/2
 
 ---
 
-## 9. Checklist Hoàn Thành
-
-| Task | Status |
-|------|--------|
-| Tạo SQL schema (table.sql) | ✅ Done |
-| Tạo sample data (data_sample.sql) | ✅ Done |
-| JPA Entity mapping (14 entities) | ✅ Done |
-| Composite PK với @EmbeddedId | ✅ Done |
-| Quoted table names ("User", "Order") | ✅ Done |
-| image_url → imageUrl mapping | ✅ Done |
-| Repository interfaces (15 repos) | ✅ Done |
-| Filter/Search query (9 params) | ✅ Done |
-| Hibernate configuration | ✅ Done |
-| Maven compile successful | ✅ Done |
-| Server starts on port 8080 | ✅ Done

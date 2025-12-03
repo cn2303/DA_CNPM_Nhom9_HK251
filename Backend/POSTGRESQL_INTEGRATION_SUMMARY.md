@@ -2,10 +2,17 @@
 
 Tài liệu này tổng hợp chi tiết các thay đổi đã thực hiện đối với Backend để tích hợp thành công với cơ sở dữ liệu PostgreSQL (`bookstore_clean`).
 
+**Ngày cập nhật:** 03/12/2025  
+**Branch:** `feature/update-code`
+
+---
+
 ## 1. Bối Cảnh & Vấn Đề Ban Đầu
 Ban đầu, ứng dụng gặp lỗi "Whitelabel Error Page" (HTTP 500) khi truy cập các API. Nguyên nhân thực sự nằm sâu bên trong log:
 1.  **Lỗi "Relation not found"**: Hibernate không tìm thấy bảng do sự khác biệt về cách đặt tên (Case Sensitivity) giữa Java và PostgreSQL.
 2.  **Lỗi "Column not found"**: Các Entity trong Java khai báo các trường (field) không tồn tại trong file SQL (`table.sql`) mà bạn cung cấp.
+
+---
 
 ## 2. Cấu Hình Hệ Thống (Configuration)
 **File:** `src/main/resources/application.properties`
@@ -29,6 +36,8 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 # Cấu hình này bắt buộc Hibernate sử dụng CHÍNH XÁC tên được định nghĩa trong @Table.
 spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 ```
+
+---
 
 ## 3. Chỉnh Sửa Entity Mapping (Khắc phục lỗi 500)
 
@@ -66,9 +75,53 @@ Sau khi sửa tên bảng, lỗi tiếp theo là "Column ... does not exist". Co
     *   Đã xóa: `private BigDecimal unitPrice;`
     *   *Lý do*: Giá tiền được lấy tham chiếu từ bảng `Book`, không lưu trực tiếp trong item (theo thiết kế của SQL hiện tại).
 
-## 4. Cấu Trúc File Backend Hiện Tại
+### D. Thêm Field Mới: `imageUrl`
+Để hỗ trợ hiển thị ảnh sách từ Cloudinary:
+*   **Book.java**: Thêm field `imageUrl` map với cột `image_url` trong database.
+```java
+@Column(name = "image_url", length = 500)
+private String imageUrl;
+```
 
-Dưới đây là sơ đồ các file quan trọng trong thư mục `Backend` sau khi chỉnh sửa:
+---
+
+## 4. API Filter Nâng Cao
+
+### BookRepository - Full Filter Query
+Hỗ trợ lọc sách với **9 parameters** (tất cả đều optional):
+
+| Parameter | Type | Mô tả |
+|-----------|------|-------|
+| `keyword` | String | Tìm trong title |
+| `authorName` | String | Tên tác giả |
+| `publisherName` | String | Nhà xuất bản |
+| `minPrice` | BigDecimal | Giá tối thiểu |
+| `maxPrice` | BigDecimal | Giá tối đa |
+| `categoryId` | Integer | ID danh mục |
+| `publicationYear` | Integer | Năm xuất bản |
+| `language` | String | Ngôn ngữ |
+| `status` | String | Trạng thái (Active/Inactive) |
+
+### Native SQL Query
+```sql
+SELECT DISTINCT b.*
+FROM book b
+LEFT JOIN bookcategory bc ON b.bookid = bc.bookid
+LEFT JOIN category c ON bc.categoryid = c.categoryid
+WHERE (:keyword IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
+  AND (:authorName IS NULL OR LOWER(b.authorname) LIKE LOWER(CONCAT('%', :authorName, '%')))
+  AND (:publisherName IS NULL OR LOWER(b.publishername) LIKE LOWER(CONCAT('%', :publisherName, '%')))
+  AND (:minPrice IS NULL OR b.price >= :minPrice)
+  AND (:maxPrice IS NULL OR b.price <= :maxPrice)
+  AND (:categoryId IS NULL OR c.categoryid = :categoryId)
+  AND (:publicationYear IS NULL OR b.publicationyear = :publicationYear)
+  AND (:language IS NULL OR LOWER(b.language) LIKE LOWER(CONCAT('%', :language, '%')))
+  AND (:status IS NULL OR LOWER(b.status) = LOWER(:status))
+```
+
+---
+
+## 5. Cấu Trúc File Backend Hiện Tại
 
 ```text
 Backend/
@@ -76,60 +129,91 @@ Backend/
 │   └── application.properties       # [ĐÃ SỬA] Cấu hình DB & Naming Strategy
 ├── src/main/java/com/Project/Bookstore/
 │   ├── BookstoreApplication.java    # File chạy chính (Main)
-│   ├── Controller/                  # Nơi nhận các API Request từ Frontend
-│   │   ├── BookController.java      # API: /api/books
+│   ├── Controller/
+│   │   ├── BookController.java      # [ĐÃ SỬA] API: /api/books + /api/books/filter
 │   │   ├── CartController.java      # API: /api/carts
 │   │   ├── CategoryController.java  # API: /api/categories
 │   │   ├── OrderController.java     # API: /api/orders
 │   │   ├── UserController.java      # API: /api/users
 │   │   └── ...
-│   ├── Model/                       # Các Class ánh xạ với bảng trong DB (Entity)
+│   ├── Model/
 │   │   ├── User.java                # [ĐÃ SỬA] Map với bảng "User"
 │   │   ├── Order.java               # [ĐÃ SỬA] Map với bảng "Order"
-│   │   ├── Book.java                # [ĐÃ SỬA] Map với bảng book
+│   │   ├── Book.java                # [ĐÃ SỬA] Thêm imageUrl, map với bảng book
 │   │   ├── Category.java            # [ĐÃ SỬA] Xóa field 'description'
 │   │   ├── Cart.java                # [ĐÃ SỬA] Xóa field 'createdAt', 'updatedAt'
 │   │   ├── CartItem.java            # [ĐÃ SỬA] Xóa field 'unitPrice'
 │   │   ├── OrderItem.java           # [ĐÃ SỬA] Xóa field 'unitPrice'
 │   │   ├── Voucher.java             # [ĐÃ SỬA] Xử lý cột "End"
 │   │   └── ...
-│   ├── Repository/                  # Lớp giao tiếp dữ liệu (JPA Repository)
-│   │   ├── BookRepository.java
+│   ├── Repository/
+│   │   ├── BookRepository.java      # [ĐÃ SỬA] Full filter query với 9 params
 │   │   ├── UserRepository.java
 │   │   └── ...
-│   └── Service/                     # Lớp xử lý nghiệp vụ (Business Logic)
-│       ├── BookService.java
+│   └── Service/
+│       ├── BookService.java         # [ĐÃ SỬA] CRUD + Filter methods
 │       ├── UserService.java
 │       └── ...
-└── pom.xml                          # Quản lý thư viện (Đã có PostgreSQL Driver)
+├── add_image_url_column.sql         # Script SQL thêm cột image_url
+├── POSTGRESQL_INTEGRATION_SUMMARY.md # File tài liệu này
+└── pom.xml                          # Dependencies (PostgreSQL Driver)
 ```
 
-## 5. Hướng Dẫn Kiểm Tra (Testing)
+---
 
-Để đảm bảo hệ thống hoạt động ổn định, hãy thực hiện các bước sau:
+## 6. API Endpoints
 
-1.  **Khởi động Database**: Đảm bảo PostgreSQL đang chạy và database `bookstore_clean` đã được import dữ liệu.
-2.  **Chạy Backend**:
-    *   Mở terminal tại thư mục `Backend`.
-    *   Chạy lệnh: `mvnw spring-boot:run`
-3.  **Test các API Endpoints** (Sử dụng Postman hoặc trình duyệt):
+### Books API
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | `/api/books` | Lấy tất cả sách |
+| GET | `/api/books/{id}` | Lấy sách theo ID |
+| GET | `/api/books/search?q=keyword` | Tìm kiếm theo title/author |
+| GET | `/api/books/filter?...` | Lọc nâng cao (9 params) |
+| POST | `/api/books` | Tạo sách mới |
+| PUT | `/api/books/{id}` | Cập nhật sách |
+| DELETE | `/api/books/{id}` | Xóa sách |
+| PATCH | `/api/books/{id}/image` | Cập nhật URL ảnh |
 
-    *   **Sách (Books)**:
-        *   URL: `http://localhost:8080/api/books`
-        *   Kết quả mong đợi: Danh sách JSON các cuốn sách.
+### Các API khác
+| Endpoint | Mô tả |
+|----------|-------|
+| `/api/users` | Quản lý người dùng |
+| `/api/categories` | Danh mục sách |
+| `/api/carts/{userId}` | Giỏ hàng theo user |
+| `/api/orders` | Đơn hàng |
+| `/api/reviews` | Đánh giá sách |
+| `/api/vouchers` | Mã giảm giá |
 
-    *   **Danh mục (Categories)**:
-        *   URL: `http://localhost:8080/api/categories`
-        *   Kết quả mong đợi: Danh sách JSON các thể loại (không còn lỗi 500).
+---
 
-    *   **Người dùng (Users)**:
-        *   URL: `http://localhost:8080/api/users`
-        *   Kết quả mong đợi: Danh sách người dùng.
+## 7. Hướng Dẫn Test
 
-    *   **Giỏ hàng (Cart)**:
-        *   URL: `http://localhost:8080/api/carts/1` (Thay 1 bằng ID user tồn tại)
-        *   Kết quả mong đợi: Chi tiết giỏ hàng của user đó.
+### Khởi động Backend
+```bash
+cd Backend
+mvn spring-boot:run
+```
 
-    *   **Kiểm tra hệ thống**:
-        *   URL: `http://localhost:8080/api/test/info`
-        *   Kết quả mong đợi: `Backend is running! Database: bookstore_clean...`
+### Test Links (Click để mở)
+- **Tất cả sách:** http://localhost:8080/api/books
+- **Tìm kiếm:** http://localhost:8080/api/books/search?q=java
+- **Lọc theo giá:** http://localhost:8080/api/books/filter?minPrice=50000&maxPrice=150000
+- **Lọc theo category:** http://localhost:8080/api/books/filter?categoryId=1
+- **Lọc kết hợp:** http://localhost:8080/api/books/filter?keyword=sach&minPrice=50000&status=Active
+- **Danh mục:** http://localhost:8080/api/categories
+- **Người dùng:** http://localhost:8080/api/users
+
+### Frontend Integration
+```jsx
+// React component hiển thị ảnh sách
+<img src={book.imageUrl} alt={book.title} />
+```
+
+---
+
+## 8. Lưu Ý Quan Trọng
+
+1. **CORS**: Đã cấu hình cho phép React frontend (`http://localhost:5173`) gọi API.
+2. **Image URL**: Ảnh được lưu sẵn trên Cloudinary, backend chỉ đọc URL từ database.
+3. **Case Sensitivity**: PostgreSQL xử lý tên bảng/cột lowercase mặc định, cần chú ý khi viết native query.

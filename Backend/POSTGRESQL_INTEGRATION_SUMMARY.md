@@ -1,219 +1,351 @@
-# Tổng Hợp Tích Hợp PostgreSQL
+# Tổng Hợp: Database & JPA/Hibernate Integration
 
-Tài liệu này tổng hợp chi tiết các thay đổi đã thực hiện đối với Backend để tích hợp thành công với cơ sở dữ liệu PostgreSQL (`bookstore_clean`).
+Tài liệu này mô tả công việc tích hợp PostgreSQL với Backend Spring Boot thông qua JPA/Hibernate.
 
 **Ngày cập nhật:** 03/12/2025  
-**Branch:** `feature/update-code`
+**Branch:** `feature/update-code`  
+**Người thực hiện:** Database & JPA/Hibernate Developer
 
 ---
 
-## 1. Bối Cảnh & Vấn Đề Ban Đầu
-Ban đầu, ứng dụng gặp lỗi "Whitelabel Error Page" (HTTP 500) khi truy cập các API. Nguyên nhân thực sự nằm sâu bên trong log:
-1.  **Lỗi "Relation not found"**: Hibernate không tìm thấy bảng do sự khác biệt về cách đặt tên (Case Sensitivity) giữa Java và PostgreSQL.
-2.  **Lỗi "Column not found"**: Các Entity trong Java khai báo các trường (field) không tồn tại trong file SQL (`table.sql`) mà bạn cung cấp.
+## 📋 Phạm Vi Công Việc
+
+### ✅ Thuộc nhiệm vụ của tôi:
+| Công việc | Mô tả |
+|-----------|-------|
+| **SQL Database** | Thiết kế và tạo schema trong `Database/table.sql` |
+| **Sample Data** | Dữ liệu mẫu trong `Database/data_sample.sql` |
+| **JPA Entity Mapping** | Tất cả file trong `Model/` - map Java class với DB tables |
+| **Repository Interfaces** | Tất cả file trong `Repository/` - query methods |
+| **Hibernate Configuration** | `application.properties` - kết nối DB |
+| **Filter/Search Query** | Native query trong `BookRepository.java` |
+
+### ❌ KHÔNG thuộc nhiệm vụ của tôi:
+| Công việc | Thuộc về |
+|-----------|----------|
+| Controller endpoints | Controller Developer |
+| Service business logic | Service Developer |
+| Frontend integration | Frontend Developer |
+| Security/Auth | Security Developer |
 
 ---
 
-## 2. Cấu Hình Hệ Thống (Configuration)
-**File:** `src/main/resources/application.properties`
+## 1. Quá Trình Phát Triển
 
-Chúng ta đã cập nhật cấu hình để kết nối PostgreSQL và quan trọng nhất là điều chỉnh cách Hibernate hiểu tên bảng.
+### Giai đoạn 1: Thiết kế ban đầu (src_initial/)
+Ban đầu, tôi tạo các entity theo hướng **Hibernate tự tạo bảng** (ddl-auto=create):
+- `Book.java`: id là Long, author/publisher là object riêng
+- `User.java`: role là enum ROLE
+- Quan hệ Category: @OneToMany trong Book
 
+### Giai đoạn 2: Chuyển sang SQL Schema cố định
+Theo yêu cầu nhóm, chuyển sang sử dụng SQL schema cố định:
+- **ddl-auto=none**: Hibernate KHÔNG tự tạo/sửa bảng
+- Tất cả entity phải match CHÍNH XÁC với SQL schema
+- author/publisher → thuộc tính String (không phải object)
+- role → String (không phải enum)
+- Xử lý quan hệ nhiều-nhiều qua bảng trung gian
+
+---
+
+## 2. SQL Database Schema
+
+### File: `Database/table.sql`
+
+#### Các bảng chính:
+| Bảng | Primary Key | Ghi chú |
+|------|-------------|---------|
+| `"User"` | UserID (SERIAL) | Tên có ngoặc kép (reserved word) |
+| `"Order"` | OrderID (SERIAL) | Tên có ngoặc kép (reserved word) |
+| `Book` | BookID (SERIAL) | Chữ thường |
+| `Category` | CategoryID (SERIAL) | Chữ thường |
+| `Cart` | CartID (SERIAL) | Chữ thường |
+| `Voucher` | Code (VARCHAR) | PK là String, không phải ID |
+| `Address` | AddressID (SERIAL) | Chữ thường |
+| `Payment` | PaymentID (SERIAL) | Chữ thường |
+| `Review` | ReviewID (SERIAL) | Chữ thường |
+
+#### Bảng quan hệ nhiều-nhiều (Composite PK):
+| Bảng | Primary Key |
+|------|-------------|
+| `BookCategory` | (BookID, CategoryID) |
+| `CartItem` | (CartID, BookID) |
+| `OrderItem` | (OrderID, BookID) |
+
+### File: `Database/data_sample.sql`
+- 70 sách với đầy đủ thông tin
+- 6 danh mục
+- 3 users (1 admin, 2 customer)
+- 2 carts với items
+- 3 vouchers
+- Image URLs từ Cloudinary
+
+---
+
+## 3. JPA Entity Mapping
+
+### A. Xử lý Reserved Words (Quoted Tables)
+PostgreSQL yêu cầu escape tên bảng trùng với từ khóa SQL:
+
+```java
+// User.java
+@Entity
+@Table(name = "\"User\"")
+public class User { ... }
+
+// Order.java
+@Entity
+@Table(name = "\"Order\"")
+public class Order { ... }
+
+// Voucher.java - cột "End" là reserved word
+@Column(name = "\"End\"")
+private LocalDate end;
+```
+
+### B. Composite Primary Keys
+Sử dụng `@EmbeddedId` cho bảng quan hệ nhiều-nhiều:
+
+```java
+// BookCategoryId.java
+@Embeddable
+public class BookCategoryId implements Serializable {
+    @Column(name = "bookid")
+    private Integer bookId;
+    
+    @Column(name = "categoryid")
+    private Integer categoryId;
+}
+
+// BookCategory.java
+@Entity
+@Table(name = "bookcategory")
+public class BookCategory {
+    @EmbeddedId
+    private BookCategoryId id;
+    
+    @ManyToOne
+    @MapsId("bookId")
+    @JoinColumn(name = "bookid")
+    private Book book;
+    
+    @ManyToOne
+    @MapsId("categoryId")
+    @JoinColumn(name = "categoryid")
+    private Category category;
+}
+```
+
+Tương tự cho `CartItem` và `OrderItem`.
+
+### C. Các Entity đã cập nhật
+
+| Entity | Thay đổi chính |
+|--------|----------------|
+| **User.java** | Table "\"User\"", role là String (không phải enum), userName length 100 |
+| **Book.java** | imageUrl map với image_url, authorName/publisherName là String |
+| **Order.java** | Table "\"Order\"", precision 15,2 cho BigDecimal |
+| **Voucher.java** | PK là code (String), percent là Integer |
+| **Category.java** | name thay vì categoryName |
+| **Payment.java** | @ManyToOne với Order (1 order có nhiều payment) |
+| **CartItem.java** | @EmbeddedId, @JsonProperty getters cho book info |
+| **OrderItem.java** | @EmbeddedId, @JsonProperty getters cho book info |
+| **Review.java** | @JsonProperty getters cho user/book info |
+
+### D. Xóa các Entity không cần thiết
+- **Admin.java**: Xóa @Entity, chuyển thành utility class
+- **Customer.java**: Xóa @Entity, chuyển thành utility class
+- *Lý do*: Role chỉ là field String trong User, không cần bảng riêng
+
+---
+
+## 4. Repository Interfaces
+
+### BookRepository.java
+```java
+@Repository
+public interface BookRepository extends JpaRepository<Book, Integer> {
+    
+    // Tìm kiếm theo title hoặc author
+    List<Book> findByTitleContainingIgnoreCaseOrAuthorNameContainingIgnoreCase(
+        String title, String authorName);
+    
+    // Filter nâng cao với 9 parameters (Native Query)
+    @Query(value = """
+        SELECT DISTINCT b.* FROM book b
+        LEFT JOIN bookcategory bc ON b.bookid = bc.bookid
+        LEFT JOIN category c ON bc.categoryid = c.categoryid
+        WHERE (:keyword IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
+          AND (:authorName IS NULL OR LOWER(b.authorname) LIKE LOWER(CONCAT('%', :authorName, '%')))
+          AND (:publisherName IS NULL OR LOWER(b.publishername) LIKE LOWER(CONCAT('%', :publisherName, '%')))
+          AND (CAST(:minPrice AS NUMERIC) IS NULL OR b.price >= :minPrice)
+          AND (CAST(:maxPrice AS NUMERIC) IS NULL OR b.price <= :maxPrice)
+          AND (:categoryId IS NULL OR c.categoryid = :categoryId)
+          AND (:publicationYear IS NULL OR b.publicationyear = :publicationYear)
+          AND (:language IS NULL OR LOWER(b.language) LIKE LOWER(CONCAT('%', :language, '%')))
+          AND (:status IS NULL OR LOWER(b.status) = LOWER(:status))
+        """, nativeQuery = true)
+    List<Book> filterBooks(...);
+}
+```
+
+### Các Repository khác:
+| Repository | Query Methods |
+|------------|---------------|
+| UserRepository | findByEmail, findByUserName, findByRole |
+| CartItemRepository | findByCart_CartId, findByCart_CartIdAndBook_BookId |
+| AddressRepository | findByUser_UserId, findByUser_UserIdAndIsDefaultTrue |
+| AdminRepository | findByRole("admin") - extends JpaRepository<User, Integer> |
+| CustomerRepository | findByRole("customer") - extends JpaRepository<User, Integer> |
+
+---
+
+## 5. Cấu Hình Hibernate
+
+### File: `src/main/resources/application.properties`
 ```properties
-# Kết nối Database
+# PostgreSQL Connection
 spring.datasource.url=jdbc:postgresql://localhost:5432/bookstore_clean
 spring.datasource.username=postgres
 spring.datasource.password=123456
+spring.datasource.driver-class-name=org.postgresql.Driver
 
-# Cấu hình Hibernate
-# 'none': Ngăn Hibernate tự động sửa đổi cấu trúc DB (An toàn cho dữ liệu có sẵn)
-spring.jpa.hibernate.ddl-auto=none
-spring.jpa.show-sql=true
+# Hibernate Settings
+spring.jpa.hibernate.ddl-auto=none          # KHÔNG tự tạo/sửa bảng
+spring.jpa.show-sql=true                     # Log SQL queries
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.format_sql=true
 
-# Chiến lược đặt tên (QUAN TRỌNG)
-# Mặc định, Spring Boot sẽ chuyển CamelCase thành snake_case (ví dụ: User -> user).
-# Cấu hình này bắt buộc Hibernate sử dụng CHÍNH XÁC tên được định nghĩa trong @Table.
+# Naming Strategy - giữ nguyên tên trong @Table/@Column
 spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 ```
 
 ---
 
-## 3. Chỉnh Sửa Entity Mapping (Khắc phục lỗi 500)
+## 6. Cấu Trúc File
 
-Đây là phần phức tạp nhất. PostgreSQL xử lý tên bảng/cột rất đặc thù:
-*   Tên **không nằm trong ngoặc kép** sẽ tự động chuyển thành **chữ thường** (lowercase).
-*   Tên **nằm trong ngoặc kép** sẽ giữ nguyên **chữ hoa/thường** (Case Sensitive).
-
-Dựa trên file `table.sql` và `data_sample.sql`, chúng ta đã phân loại và sửa đổi các Entity như sau:
-
-### A. Nhóm Bảng Có Phân Biệt Hoa/Thường (Quoted Tables)
-Trong SQL, các bảng này được tạo bằng dấu ngoặc kép, ví dụ: `CREATE TABLE "User" ...`.
-*   **User.java**: `@Table(name = "\"User\"")`
-*   **Order.java**: `@Table(name = "\"Order\"")`
-*   **Voucher.java**: Bảng tên thường, nhưng cột `End` là từ khóa SQL nên phải để trong ngoặc: `@Column(name = "\"End\"")`.
-
-### B. Nhóm Bảng Chữ Thường (Unquoted Tables)
-Trong SQL, các bảng này không có ngoặc kép, nên PostgreSQL hiểu là chữ thường. Chúng ta đã sửa `@Table` trong Java về chữ thường để khớp.
-*   **Book.java**: `@Table(name = "book")`
-*   **Category.java**: `@Table(name = "category")`
-*   **Cart.java**: `@Table(name = "cart")`
-*   **Review.java**: `@Table(name = "review")`
-*   ... và các bảng còn lại (`address`, `cartitem`, `orderitem`, `payment`, `role`, `orderaddress`, `orderstatushistory`).
-
-### C. Đồng Bộ Hóa Schema (Xóa các trường dư thừa)
-Sau khi sửa tên bảng, lỗi tiếp theo là "Column ... does not exist". Code Java chứa các trường mà trong Database thực tế không có. Chúng ta đã xóa chúng để ứng dụng chạy được:
-
-1.  **Cart.java**:
-    *   Đã xóa: `private LocalDateTime createdAt;`
-    *   Đã xóa: `private LocalDateTime updatedAt;`
-    *   *Lý do*: Bảng `cart` trong SQL chỉ có `CartID` và `UserID`.
-2.  **Category.java**:
-    *   Đã xóa: `private String description;`
-    *   *Lý do*: Bảng `category` chỉ có `CategoryID` và `Name`.
-3.  **CartItem.java** & **OrderItem.java**:
-    *   Đã xóa: `private BigDecimal unitPrice;`
-    *   *Lý do*: Giá tiền được lấy tham chiếu từ bảng `Book`, không lưu trực tiếp trong item (theo thiết kế của SQL hiện tại).
-
-### D. Thêm Field Mới: `imageUrl`
-Để hỗ trợ hiển thị ảnh sách từ Cloudinary:
-*   **Book.java**: Thêm field `imageUrl` map với cột `image_url` trong database.
-```java
-@Column(name = "image_url", length = 500)
-private String imageUrl;
 ```
-
----
-
-## 4. API Filter Nâng Cao
-
-### BookRepository - Full Filter Query
-Hỗ trợ lọc sách với **9 parameters** (tất cả đều optional):
-
-| Parameter | Type | Mô tả |
-|-----------|------|-------|
-| `keyword` | String | Tìm trong title |
-| `authorName` | String | Tên tác giả |
-| `publisherName` | String | Nhà xuất bản |
-| `minPrice` | BigDecimal | Giá tối thiểu |
-| `maxPrice` | BigDecimal | Giá tối đa |
-| `categoryId` | Integer | ID danh mục |
-| `publicationYear` | Integer | Năm xuất bản |
-| `language` | String | Ngôn ngữ |
-| `status` | String | Trạng thái (Active/Inactive) |
-
-### Native SQL Query
-```sql
-SELECT DISTINCT b.*
-FROM book b
-LEFT JOIN bookcategory bc ON b.bookid = bc.bookid
-LEFT JOIN category c ON bc.categoryid = c.categoryid
-WHERE (:keyword IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
-  AND (:authorName IS NULL OR LOWER(b.authorname) LIKE LOWER(CONCAT('%', :authorName, '%')))
-  AND (:publisherName IS NULL OR LOWER(b.publishername) LIKE LOWER(CONCAT('%', :publisherName, '%')))
-  AND (:minPrice IS NULL OR b.price >= :minPrice)
-  AND (:maxPrice IS NULL OR b.price <= :maxPrice)
-  AND (:categoryId IS NULL OR c.categoryid = :categoryId)
-  AND (:publicationYear IS NULL OR b.publicationyear = :publicationYear)
-  AND (:language IS NULL OR LOWER(b.language) LIKE LOWER(CONCAT('%', :language, '%')))
-  AND (:status IS NULL OR LOWER(b.status) = LOWER(:status))
-```
-
----
-
-## 5. Cấu Trúc File Backend Hiện Tại
-
-```text
 Backend/
-├── src/main/resources/
-│   └── application.properties       # [ĐÃ SỬA] Cấu hình DB & Naming Strategy
 ├── src/main/java/com/Project/Bookstore/
-│   ├── BookstoreApplication.java    # File chạy chính (Main)
-│   ├── Controller/
-│   │   ├── BookController.java      # [ĐÃ SỬA] API: /api/books + /api/books/filter
-│   │   ├── CartController.java      # API: /api/carts
-│   │   ├── CategoryController.java  # API: /api/categories
-│   │   ├── OrderController.java     # API: /api/orders
-│   │   ├── UserController.java      # API: /api/users
-│   │   └── ...
-│   ├── Model/
-│   │   ├── User.java                # [ĐÃ SỬA] Map với bảng "User"
-│   │   ├── Order.java               # [ĐÃ SỬA] Map với bảng "Order"
-│   │   ├── Book.java                # [ĐÃ SỬA] Thêm imageUrl, map với bảng book
-│   │   ├── Category.java            # [ĐÃ SỬA] Xóa field 'description'
-│   │   ├── Cart.java                # [ĐÃ SỬA] Xóa field 'createdAt', 'updatedAt'
-│   │   ├── CartItem.java            # [ĐÃ SỬA] Xóa field 'unitPrice'
-│   │   ├── OrderItem.java           # [ĐÃ SỬA] Xóa field 'unitPrice'
-│   │   ├── Voucher.java             # [ĐÃ SỬA] Xử lý cột "End"
-│   │   └── ...
-│   ├── Repository/
-│   │   ├── BookRepository.java      # [ĐÃ SỬA] Full filter query với 9 params
-│   │   ├── UserRepository.java
-│   │   └── ...
-│   └── Service/
-│       ├── BookService.java         # [ĐÃ SỬA] CRUD + Filter methods
-│       ├── UserService.java
-│       └── ...
-├── add_image_url_column.sql         # Script SQL thêm cột image_url
-├── POSTGRESQL_INTEGRATION_SUMMARY.md # File tài liệu này
-└── pom.xml                          # Dependencies (PostgreSQL Driver)
+│   ├── Model/                          # [THUỘC NHIỆM VỤ]
+│   │   ├── User.java                   # ✅ Đã mapping
+│   │   ├── Book.java                   # ✅ Đã mapping + imageUrl
+│   │   ├── Order.java                  # ✅ Đã mapping
+│   │   ├── Category.java               # ✅ Đã mapping
+│   │   ├── Cart.java                   # ✅ Đã mapping
+│   │   ├── CartItem.java               # ✅ Composite PK
+│   │   ├── CartItemId.java             # ✅ @Embeddable
+│   │   ├── OrderItem.java              # ✅ Composite PK
+│   │   ├── OrderItemId.java            # ✅ @Embeddable
+│   │   ├── BookCategory.java           # ✅ Composite PK
+│   │   ├── BookCategoryId.java         # ✅ @Embeddable
+│   │   ├── Voucher.java                # ✅ Đã mapping
+│   │   ├── Payment.java                # ✅ Đã mapping
+│   │   ├── Review.java                 # ✅ Đã mapping
+│   │   ├── Address.java                # ✅ Đã mapping
+│   │   ├── Admin.java                  # ✅ Utility class (không phải Entity)
+│   │   └── Customer.java               # ✅ Utility class (không phải Entity)
+│   │
+│   ├── Repository/                     # [THUỘC NHIỆM VỤ]
+│   │   ├── BookRepository.java         # ✅ + filterBooks query
+│   │   ├── UserRepository.java         # ✅ + findByEmail, findByRole
+│   │   ├── CategoryRepository.java     # ✅
+│   │   ├── CartRepository.java         # ✅
+│   │   ├── CartItemRepository.java     # ✅ + finder methods
+│   │   ├── OrderRepository.java        # ✅
+│   │   ├── OrderItemRepository.java    # ✅
+│   │   ├── BookCategoryRepository.java # ✅
+│   │   ├── VoucherRepository.java      # ✅
+│   │   ├── PaymentRepository.java      # ✅
+│   │   ├── ReviewRepository.java       # ✅
+│   │   ├── AddressRepository.java      # ✅ + findByUser_UserId
+│   │   ├── AdminRepository.java        # ✅ findByRole
+│   │   └── CustomerRepository.java     # ✅ findByRole
+│   │
+│   ├── Controller/                     # [KHÔNG THUỘC NHIỆM VỤ]
+│   ├── Service/                        # [KHÔNG THUỘC NHIỆM VỤ - chỉ hỗ trợ]
+│   └── Config/                         # [KHÔNG THUỘC NHIỆM VỤ]
+│
+├── src/main/resources/
+│   └── application.properties          # [THUỘC NHIỆM VỤ] DB config
+│
+├── src_initial/                        # Backup code ban đầu (tham khảo)
+│
+└── Database/                           # [THUỘC NHIỆM VỤ]
+    ├── table.sql                       # ✅ SQL Schema
+    ├── data_sample.sql                 # ✅ Dữ liệu mẫu
+    └── Image_url.sql                   # ✅ URLs ảnh sách
 ```
 
 ---
 
-## 6. API Endpoints
+## 7. Test Links
 
-### Books API
-| Method | Endpoint | Mô tả |
-|--------|----------|-------|
-| GET | `/api/books` | Lấy tất cả sách |
-| GET | `/api/books/{id}` | Lấy sách theo ID |
-| GET | `/api/books/search?q=keyword` | Tìm kiếm theo title/author |
-| GET | `/api/books/filter?...` | Lọc nâng cao (9 params) |
-| POST | `/api/books` | Tạo sách mới |
-| PUT | `/api/books/{id}` | Cập nhật sách |
-| DELETE | `/api/books/{id}` | Xóa sách |
-| PATCH | `/api/books/{id}/image` | Cập nhật URL ảnh |
+### Books API (Filter/Search)
+```
+# Tất cả sách
+GET http://localhost:8080/api/books
+
+# Tìm kiếm theo keyword
+GET http://localhost:8080/api/books/search?q=Nguyễn
+
+# Filter theo author
+GET http://localhost:8080/api/books/filter?authorName=Nguyễn Nhật Ánh
+
+# Filter theo giá
+GET http://localhost:8080/api/books/filter?minPrice=50000&maxPrice=100000
+
+# Filter theo category
+GET http://localhost:8080/api/books/filter?categoryId=1
+
+# Filter kết hợp
+GET http://localhost:8080/api/books/filter?keyword=tâm&minPrice=50000&language=Tiếng Việt
+```
 
 ### Các API khác
-| Endpoint | Mô tả |
-|----------|-------|
-| `/api/users` | Quản lý người dùng |
-| `/api/categories` | Danh mục sách |
-| `/api/carts/{userId}` | Giỏ hàng theo user |
-| `/api/orders` | Đơn hàng |
-| `/api/reviews` | Đánh giá sách |
-| `/api/vouchers` | Mã giảm giá |
-
----
-
-## 7. Hướng Dẫn Test
-
-### Khởi động Backend
-```bash
-cd Backend
-mvn spring-boot:run
 ```
-
-### Test Links (Click để mở)
-- **Tất cả sách:** http://localhost:8080/api/books
-- **Tìm kiếm:** http://localhost:8080/api/books/search?q=java
-- **Lọc theo giá:** http://localhost:8080/api/books/filter?minPrice=50000&maxPrice=150000
-- **Lọc theo category:** http://localhost:8080/api/books/filter?categoryId=1
-- **Lọc kết hợp:** http://localhost:8080/api/books/filter?keyword=sach&minPrice=50000&status=Active
-- **Danh mục:** http://localhost:8080/api/categories
-- **Người dùng:** http://localhost:8080/api/users
-
-### Frontend Integration
-```jsx
-// React component hiển thị ảnh sách
-<img src={book.imageUrl} alt={book.title} />
+GET http://localhost:8080/api/categories
+GET http://localhost:8080/api/users
+GET http://localhost:8080/api/users/2
+GET http://localhost:8080/api/vouchers
+GET http://localhost:8080/api/carts/2
 ```
 
 ---
 
-## 8. Lưu Ý Quan Trọng
+## 8. Lưu Ý Kỹ Thuật
 
-1. **CORS**: Đã cấu hình cho phép React frontend (`http://localhost:5173`) gọi API.
-2. **Image URL**: Ảnh được lưu sẵn trên Cloudinary, backend chỉ đọc URL từ database.
-3. **Case Sensitivity**: PostgreSQL xử lý tên bảng/cột lowercase mặc định, cần chú ý khi viết native query.
+### PostgreSQL Case Sensitivity
+- Tên bảng **KHÔNG** có ngoặc kép → lowercase (`book`, `category`)
+- Tên bảng **CÓ** ngoặc kép → giữ nguyên (`"User"`, `"Order"`)
+
+### Hibernate ddl-auto=none
+- Schema được quản lý bởi `table.sql`
+- Java entities phải match CHÍNH XÁC với schema
+- Thay đổi schema → phải sửa cả SQL và Entity
+
+### Composite Primary Keys
+- Dùng `@EmbeddedId` + `@Embeddable` class
+- `@MapsId` để map với column trong embedded id
+
+### JSON Serialization
+- `@JsonIgnore` trên relationship để tránh infinite loop
+- `@JsonProperty` getters để expose thông tin cần thiết
+
+---
+
+## 9. Checklist Hoàn Thành
+
+| Task | Status |
+|------|--------|
+| Tạo SQL schema (table.sql) | ✅ Done |
+| Tạo sample data (data_sample.sql) | ✅ Done |
+| JPA Entity mapping (14 entities) | ✅ Done |
+| Composite PK với @EmbeddedId | ✅ Done |
+| Quoted table names ("User", "Order") | ✅ Done |
+| image_url → imageUrl mapping | ✅ Done |
+| Repository interfaces (15 repos) | ✅ Done |
+| Filter/Search query (9 params) | ✅ Done |
+| Hibernate configuration | ✅ Done |
+| Maven compile successful | ✅ Done |
+| Server starts on port 8080 | ✅ Done

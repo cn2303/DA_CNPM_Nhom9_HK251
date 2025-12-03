@@ -27,16 +27,16 @@ public class Order {
     @Column(name = "currentstatus", length = 50)
     private String currentStatus;
 
-    @Column(name = "shippingfee", precision = 12, scale = 2)
+    @Column(name = "shippingfee", precision = 15, scale = 2)
     private BigDecimal shippingFee;
 
-    @Column(name = "subtotalprice", precision = 12, scale = 2)
+    @Column(name = "subtotalprice", precision = 15, scale = 2)
     private BigDecimal subTotalPrice;
 
-    @Column(name = "discounttotal", precision = 12, scale = 2)
+    @Column(name = "discounttotal", precision = 15, scale = 2)
     private BigDecimal discountTotal;
 
-    @Column(name = "grandtotalprice", precision = 12, scale = 2)
+    @Column(name = "grandtotalprice", precision = 15, scale = 2)
     private BigDecimal grandTotalPrice;
 
     @JsonIgnore
@@ -63,6 +63,6 @@ public class Order {
     private List<OrderStatusHistory> orderStatusHistories;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-    private Payment payment;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Payment> payments;
 }

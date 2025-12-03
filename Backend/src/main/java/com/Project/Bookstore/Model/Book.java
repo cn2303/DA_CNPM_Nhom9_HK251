@@ -23,7 +23,7 @@ public class Book {
     @Column(name = "title", nullable = false, length = 255)
     private String title;
 
-    @Column(name = "price", precision = 12, scale = 2)
+    @Column(name = "price", nullable = false, precision = 15, scale = 2)
     private BigDecimal price;
 
     @Column(name = "publicationyear")
@@ -35,7 +35,7 @@ public class Book {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "status", length = 20)
+    @Column(name = "status", length = 50)
     private String status;
 
     @Column(name = "namepage")
@@ -56,13 +56,13 @@ public class Book {
     @Column(name = "avgrating", precision = 3, scale = 2)
     private BigDecimal avgRating;
 
-    @Column(name = "authorname", length = 100)
+    @Column(name = "authorname", length = 255)
     private String authorName;
 
     @Column(name = "authorbio", columnDefinition = "TEXT")
     private String authorBio;
 
-    @Column(name = "publishername", length = 100)
+    @Column(name = "publishername", length = 255)
     private String publisherName;
 
     // URL ảnh sách (lưu sẵn link từ Cloudinary hoặc bất kỳ nguồn nào)

@@ -1,6 +1,7 @@
 package com.Project.Bookstore.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,6 +18,7 @@ public class Category {
     private Integer categoryId;
 
     @Column(name = "name", nullable = false, length = 100)
+    @JsonProperty("name")
     private String categoryName;
 
     // Relationships

@@ -1,6 +1,7 @@
 package com.Project.Bookstore.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -25,8 +26,7 @@ public class Review {
     @Column(name = "createdat")
     private LocalDateTime createdAt;
 
-    @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userid", nullable = false)
     private User user;
 
@@ -34,4 +34,25 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "bookid", nullable = false)
     private Book book;
+
+    // Convenience getters for JSON serialization
+    @JsonProperty("userId")
+    public Integer getUserId() {
+        return user != null ? user.getUserId() : null;
+    }
+
+    @JsonProperty("userName")
+    public String getUserName() {
+        return user != null ? user.getUserName() : null;
+    }
+
+    @JsonProperty("userFullName")
+    public String getUserFullName() {
+        return user != null ? user.getFullName() : null;
+    }
+
+    @JsonProperty("bookId")
+    public Integer getBookId() {
+        return book != null ? book.getBookId() : null;
+    }
 }

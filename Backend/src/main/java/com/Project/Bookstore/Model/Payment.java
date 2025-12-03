@@ -36,7 +36,7 @@ public class Payment {
     private BigDecimal amount;
 
     @JsonIgnore
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "orderid", nullable = false)
     private Order order;
 }

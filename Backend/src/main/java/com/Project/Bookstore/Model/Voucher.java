@@ -29,14 +29,14 @@ public class Voucher {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "minordervalue", precision = 12, scale = 2)
+    @Column(name = "minordervalue", precision = 15, scale = 2)
     private BigDecimal minOrderValue;
 
-    @Column(name = "maxordervalue", precision = 12, scale = 2)
+    @Column(name = "maxordervalue", precision = 15, scale = 2)
     private BigDecimal maxOrderValue;
 
-    @Column(name = "percent", precision = 5, scale = 2)
-    private BigDecimal percent;
+    @Column(name = "percent")
+    private Integer percent;
 
     @JsonIgnore
     @ManyToOne

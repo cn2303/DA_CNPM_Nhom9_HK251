@@ -9,18 +9,18 @@ import lombok.Data;
 @Data
 public class BookCategory {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "bookcategoryid")
-    private Integer bookCategoryId;
+    @EmbeddedId
+    private BookCategoryId id;
 
     @JsonIgnore
     @ManyToOne
+    @MapsId("bookId")
     @JoinColumn(name = "bookid", nullable = false)
     private Book book;
 
     @JsonIgnore
     @ManyToOne
+    @MapsId("categoryId")
     @JoinColumn(name = "categoryid", nullable = false)
     private Category category;
 }

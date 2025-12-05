@@ -17,7 +17,7 @@ public class PaymentService {
     public List<Payment> findAll() {
         return this.paymentRepository.findAll();
     }
-    public Payment findById(Long id) {
+    public Payment findById(Integer id) {
         return this.paymentRepository.findById(id).orElse(null);
     }
     public Payment save(Payment payment) {
@@ -26,7 +26,7 @@ public class PaymentService {
     public Payment update(Payment payment) {
         return this.paymentRepository.save(payment);
     }
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         this.paymentRepository.deleteById(id);
     }
 }

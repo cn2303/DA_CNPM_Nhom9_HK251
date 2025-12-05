@@ -18,19 +18,19 @@ public class CartService {
     public CartService(CartRepository cartRepository) {
         this.cartRepository = cartRepository;
     }
-    public List<Cart> getCartItemList() {
+    public List<Cart> getAllCart() {
         return this.cartRepository.findAll();
     }
-    public Cart getCartById(Long id) {
+    public Cart getCartById(Integer id) {
         return this.cartRepository.findById(id).orElse(null);
     }
     public Cart saveCart(Cart cart) {
         return this.cartRepository.save(cart);
     }
-    public void deleteCartById(Long id) {
+    public void deleteCartById(Integer id) {
         this.cartRepository.deleteById(id);
     }
-    public List<CartItem> getItemList(Long id) {
+    public List<CartItem> getItemList(Integer id) {
         return this.getCartById(id).getCartItems();
     }
 }

@@ -1,34 +1,57 @@
 package com.Project.Bookstore.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "Orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "OrderID")
+    private Integer id;
 
+    @Column(name = "currentstatus")
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
+    @Column(name = "orderdate")
     private LocalDateTime orderDate;
-    private int shippingFee;
-    private int discount;
-    private List<Book> bookList;
+    @Column(name = "shippingfee")
+    private BigDecimal shippingFee;
+    @Column(name = "subtotalprice")
+    private BigDecimal subtotalPrice;
+    @Column(name = "discounttotal")
+    private BigDecimal discountTotal;
+    @Column(name = "grandtotalprice")
+    private BigDecimal grandTotalPrice;
     @ManyToOne
-    private Customer customer;
+    @JoinColumn(name = "UserID")
+    private User user;
     @OneToOne
+    @JoinColumn(name = "orderaddressid")
     private OrderAddress orderAddress;
     @ManyToOne
+    @JoinColumn(name = "vouchercode")
     private Voucher voucher;
-    @OneToOne
+
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("order")
     private Payment payment;
     //xem lai
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,  orphanRemoval = true)
+    @JsonIgnoreProperties("order")
     private List<OrderItem> orderItemList = new ArrayList<>();
 }

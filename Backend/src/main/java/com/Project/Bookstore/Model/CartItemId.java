@@ -3,25 +3,27 @@ package com.Project.Bookstore.Model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 
-@Data
+@Getter
+@Setter
 @Embeddable
-public class CartItemId implements Serializable {
 
-    @Column(name = "id")
-    private Long cartId;
+public class    CartItemId implements Serializable {
 
-    @Column(name = "id")
-    private Long bookId;
+    @Column(name = "CartID")
+    private Integer cartId;
+
+    @Column(name = "BookID")
+    private Integer bookId;
 
     public CartItemId() {}
 
-    public CartItemId(Long cartId, Long bookId) {
+    public CartItemId(Integer cartId, Integer bookId) {
         this.cartId = cartId;
         this.bookId = bookId;
     }

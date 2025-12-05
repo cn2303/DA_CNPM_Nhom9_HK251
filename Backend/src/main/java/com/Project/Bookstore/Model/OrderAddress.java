@@ -1,18 +1,28 @@
 package com.Project.Bookstore.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "orderaddress")
 public class OrderAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String ward;
+    @Column(name = "orderaddrID")
+    private Integer id;
+    @Column(name = "City")
     private String city;
+    @Column(name = "Ward")
+    private String ward;
+    @Column(name = "addressdetail")
     private String addressDetail;
+    @Column(name = "Phone")
     private String phone;
 }

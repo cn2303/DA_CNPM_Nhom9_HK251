@@ -1,23 +1,30 @@
 package com.Project.Bookstore.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "cartitem")
 public class CartItem {
     @EmbeddedId
-    private CartItemId id;
+    private CartItemId id = new CartItemId();
 
     @ManyToOne
     @MapsId("bookId")
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "BookID")
     private Book book;
 
     @ManyToOne
     @MapsId("cartId")
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "CartID")
+    @JsonIgnore
     private Cart cart;
 
+    @Column(name = "quantity")
     private int quantity;
 }

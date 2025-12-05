@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface VoucherRepository extends JpaRepository<Voucher, Long> {
+public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 }

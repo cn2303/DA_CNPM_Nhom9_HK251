@@ -17,10 +17,10 @@ public class AddressService {
     public List<Address> findAll() {
         return this.addressRepository.findAll();
     }
-    public Address findById(Long id) {
+    public Address findById(Integer id) {
         return this.addressRepository.findById(id).orElse(null);
     }
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         this.addressRepository.deleteById(id);
     }
     public Address saveAddress(Address address) {

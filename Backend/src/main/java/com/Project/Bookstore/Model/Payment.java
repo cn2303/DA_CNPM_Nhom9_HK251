@@ -1,10 +1,9 @@
 package com.Project.Bookstore.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
@@ -13,15 +12,28 @@ import java.util.Date;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "Payment")
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "PaymentID")
+    private Integer id;
+    @OneToOne
+    @JoinColumn(name = "OrderID")
+    private Order order;
 
+    @Column(name = "transactioncode")
     private String transactionCode;
+    @Column(name = "paidat")
     private LocalDateTime paidAt;
+    @Column(name = "paystatus")
     private PaymentStatus payStatus;
-    private int amount;
+    @Column(name = "Amount")
+    private Integer amount;
+    @Column(name = "Gateway")
     private String gateWay;
-    private String Response;
+    @Column(name = "gatewayresponse")
+    private String GateWayResponse;
 }

@@ -1,3 +1,8 @@
 package com.Project.Bookstore.Model;
 
-public enum OrderStatus {Waiting, Processing ,Completed, Canceled}
+public enum OrderStatus {
+    Pending,
+    Processing ,
+    Completed,
+    Canceled
+}

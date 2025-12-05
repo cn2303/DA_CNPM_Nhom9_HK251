@@ -21,13 +21,16 @@ public class OrderService {
     public List<Order> getAllOrder() {
         return this.orderRepository.findAll();
     }
-    public Order getOrderById(Long id) {
+    public Order getOrderById(Integer id) {
         return this.orderRepository.findById(id).orElse(null);
     }
     public Order saveOrder(Order order) {
         return this.orderRepository.save(order);
     }
-    public void deleteOrderById(Long id) {
+    public void deleteOrderById(Integer id) {
         this.orderRepository.deleteById(id);
+    }
+    public List<Order> getOrderByUserId(Integer id) {
+        return this.orderRepository.findByUserId(id);
     }
 }

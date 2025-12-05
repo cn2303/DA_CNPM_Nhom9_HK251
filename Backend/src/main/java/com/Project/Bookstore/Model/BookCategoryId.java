@@ -2,44 +2,36 @@ package com.Project.Bookstore.Model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-@Data
 @Getter
 @Setter
 @Embeddable
-public class OrderItemId implements Serializable {
-
-    @Column(name = "OrderID")
-    private Integer orderId;
-
+public class BookCategoryId {
     @Column(name = "BookID")
     private Integer bookId;
 
-    public OrderItemId() {}
+    @Column(name = "CategoryID")
+    private Integer categoryId;
 
-    public OrderItemId(Integer orderId, Integer bookId) {
-        this.orderId = orderId;
+    public BookCategoryId(){}
+    public BookCategoryId(Integer bookId, Integer categoryId) {
         this.bookId = bookId;
+        this.categoryId = categoryId;
     }
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OrderItemId that = (OrderItemId) o;
-        return Objects.equals(orderId, that.orderId) &&
-                Objects.equals(bookId, that.bookId);
+        BookCategoryId that = (BookCategoryId) o;
+        return Objects.equals(bookId, that.bookId)
+                && Objects.equals(categoryId, that.categoryId);
     }
-
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, bookId);
+        return Objects.hash(bookId, categoryId);
     }
 }

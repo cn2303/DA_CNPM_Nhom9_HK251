@@ -1,21 +1,30 @@
 package com.Project.Bookstore.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "Cart")
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "CartID")
+    private Integer id;
 
+    //@OneToOne(fetch = FetchType.LAZY)
     @OneToOne
-    private Book book;
+    @JoinColumn(name = "UserID", unique = true)
+    private User user;
     //Xem lai
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,  orphanRemoval = true)
+    @JsonIgnoreProperties("cart")
     private List<CartItem> cartItems = new ArrayList<>();
 }

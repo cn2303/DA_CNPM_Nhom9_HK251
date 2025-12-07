@@ -22,6 +22,9 @@ public class ReviewService {
         return this.reviewRepository.findByBookId(bookId);
     }
     public Review saveReview(Review review) {
+        if(review.getRating() > 5 || review.getRating() <= 0){
+            throw new RuntimeException("Invalid rating");
+        }
         return this.reviewRepository.save(review);
     }
     public void deleteReview(Integer id) {

@@ -23,7 +23,7 @@ public class Cart {
     @OneToOne
     @JoinColumn(name = "UserID", unique = true)
     private User user;
-    //Xem lai
+
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,  orphanRemoval = true)
     @JsonIgnoreProperties("cart")
     private List<CartItem> cartItems = new ArrayList<>();

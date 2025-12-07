@@ -4,10 +4,13 @@ import com.Project.Bookstore.Model.Review;
 import com.Project.Bookstore.Repository.ReviewRepository;
 import com.Project.Bookstore.Service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin("http://localhost:5173")
 @RestController
 @RequestMapping("/review")
 public class ReviewController {
@@ -25,12 +28,24 @@ public class ReviewController {
         return this.reviewService.getReviewsByBook(id);
     }
     @PostMapping
-    public Review saveReview(@RequestBody Review review) {
-        return this.reviewService.saveReview(review);
+    public ResponseEntity<?> saveReview(@RequestBody Review review) {
+        try{
+            Review saved = this.reviewService.saveReview(review);
+            return ResponseEntity.ok().body(saved);
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
     @PutMapping
-    public Review updateReview(@RequestBody Review review) {
-        return this.reviewService.saveReview(review);
+    public ResponseEntity<?> updateReview(@RequestBody Review review) {
+        try{
+            Review saved = this.reviewService.saveReview(review);
+            return ResponseEntity.ok().body(saved);
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
     @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable Integer id) {

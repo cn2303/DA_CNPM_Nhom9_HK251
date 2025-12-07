@@ -5,6 +5,7 @@ import com.Project.Bookstore.Model.Cart;
 import com.Project.Bookstore.Model.CartItem;
 import com.Project.Bookstore.Service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,21 +20,58 @@ public class CartController {
     public CartController(CartService cartService) {
         this.cartService = cartService;
     }
-
     @GetMapping
     public List<Cart> getAllCart() {
         return this.cartService.getAllCart();
     }
     @GetMapping("/{id}")
-    public Cart getCartById(@PathVariable Integer id) {
-        return this.cartService.getCartById(id);
+    public ResponseEntity<?> getCartById(@PathVariable Integer id) {
+        try{
+            Cart cart = this.cartService.getCartById(id);
+            return ResponseEntity.ok(cart);
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
     @PostMapping
-    public Cart addCart(@RequestBody Cart cart) {
-        return this.cartService.saveCart(cart);
+    public ResponseEntity<?> addCart(@RequestBody Cart cart) {
+        try{
+            Cart savedCart = this.cartService.saveCart(cart);
+            return ResponseEntity.ok(savedCart);
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
     @PutMapping
-    public Cart updateCart(@RequestBody Cart cart) {
-        return this.cartService.saveCart(cart);
+    public ResponseEntity<?> updateCart(@RequestBody Cart cart) {
+        try{
+            Cart updatedCart = this.cartService.updateCart(cart);
+            return ResponseEntity.ok(updatedCart);
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCart(@PathVariable Integer id) {
+        try {
+            this.cartService.deleteCartById(id);
+            return ResponseEntity.ok().build();
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+    @PutMapping("/{cartId}/book/{bookId}")
+    public ResponseEntity<?> addToCart(@PathVariable Integer cartId, @PathVariable Integer bookId) {
+        try{
+            Cart updatedCart = this.cartService.addToCart(cartId, bookId);
+            return ResponseEntity.ok(updatedCart);
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

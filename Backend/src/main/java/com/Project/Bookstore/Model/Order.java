@@ -28,6 +28,8 @@ public class Order {
     private OrderStatus status;
     @Column(name = "orderdate")
     private LocalDateTime orderDate;
+    @Column(name = "paymentmethod")
+    private String paymentMethod;
     @Column(name = "shippingfee")
     private BigDecimal shippingFee;
     @Column(name = "subtotalprice")
@@ -36,6 +38,7 @@ public class Order {
     private BigDecimal discountTotal;
     @Column(name = "grandtotalprice")
     private BigDecimal grandTotalPrice;
+
     @ManyToOne
     @JoinColumn(name = "UserID")
     private User user;
@@ -47,10 +50,10 @@ public class Order {
     private Voucher voucher;
 
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("order")
-    private Payment payment;
-    //xem lai
+//    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+//    @JsonIgnoreProperties("order")
+//    private Payment payment;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,  orphanRemoval = true)
     @JsonIgnoreProperties("order")
     private List<OrderItem> orderItemList = new ArrayList<>();

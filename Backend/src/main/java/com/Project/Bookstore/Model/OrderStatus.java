@@ -2,7 +2,7 @@ package com.Project.Bookstore.Model;
 
 public enum OrderStatus {
     Pending,
-    Processing ,
+    Cancelled,
     Completed,
-    Canceled
+    Processing
 }

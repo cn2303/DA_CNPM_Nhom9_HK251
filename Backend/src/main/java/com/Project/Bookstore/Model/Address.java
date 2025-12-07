@@ -26,7 +26,7 @@ public class Address {
     @Column(name = "Phone")
     private String phone;
     @Column(name = "isdefault")
-    private boolean Default;
+    private boolean Default = false;
     @ManyToOne
     @JoinColumn(name = "UserID")
     @JsonIgnoreProperties("addresses")

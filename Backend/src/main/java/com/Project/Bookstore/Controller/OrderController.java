@@ -7,6 +7,7 @@ import com.Project.Bookstore.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class OrderController {
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<Order> getAllOrders() {
         return this.orderService.getAllOrder();
@@ -59,6 +61,7 @@ public class OrderController {
     public List<Order> getOrdersByCustomer(@PathVariable Integer id) {
         return this.orderService.getOrderByUserId(id);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/status/{status}")
     public List<Order> getOrdersByStatus(@PathVariable OrderStatus status) {
         return this.orderService.getOrderByStatus(status);
@@ -67,6 +70,7 @@ public class OrderController {
     public List<Order> getOrdersByStatusAndUser(@PathVariable Integer id, @PathVariable OrderStatus status) {
         return this.orderService.getOrderByStatusAndUser(status, id);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/status/{status}")
     public Order updateOrderStatus(@PathVariable Integer id, @PathVariable OrderStatus status) {
         return this.orderService.changeOrderStatus(id, status);

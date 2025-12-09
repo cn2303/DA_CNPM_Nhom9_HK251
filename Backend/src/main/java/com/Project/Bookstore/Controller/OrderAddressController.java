@@ -3,6 +3,7 @@ package com.Project.Bookstore.Controller;
 import com.Project.Bookstore.Model.OrderAddress;
 import com.Project.Bookstore.Service.OrderAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class OrderAddressController {
     public OrderAddressController(OrderAddressService orderAddressService) {
         this.orderAddressService = orderAddressService;
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<OrderAddress> getOrderAddress() {
         return this.orderAddressService.getAllOrderAddress();

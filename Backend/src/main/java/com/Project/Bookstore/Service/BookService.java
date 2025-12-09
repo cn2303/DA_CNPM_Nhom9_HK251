@@ -91,6 +91,7 @@ public class BookService {
         existingBook.setSize(bookInput.getSize());
         existingBook.setType(bookInput.getType());
         existingBook.setAverageRating(bookInput.getAverageRating());
+        existingBook.setImageUrl(bookInput.getImageUrl());
         // XÓA TẤT CẢ categories cũ
         existingBook.getCategories().clear();
 

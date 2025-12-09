@@ -6,6 +6,7 @@ import com.Project.Bookstore.Service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,10 +33,12 @@ public class VoucherController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public Voucher saveVoucher(@RequestBody Voucher voucher) {
         return this.voucherService.saveVoucher(voucher);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<?> updateVoucher(@RequestBody Voucher voucher) {
         try{
@@ -46,6 +49,7 @@ public class VoucherController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteVoucher(@PathVariable String id) {
         try {

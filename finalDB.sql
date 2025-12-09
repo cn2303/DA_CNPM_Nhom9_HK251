@@ -50,22 +50,22 @@ CASCADE;
 
 CREATE TABLE users (
     UserID    SERIAL PRIMARY KEY,
-    UserName  VARCHAR(100) NOT NULL UNIQUE,
+    Username  VARCHAR(100) NOT NULL UNIQUE,
     Password  VARCHAR(255) NOT NULL,
-    FullName  VARCHAR(100) NOT NULL,
+    Fullname  VARCHAR(100) NOT NULL,
     Email     VARCHAR(100) NOT NULL UNIQUE,
     Phone     VARCHAR(20),
-    BirthDate DATE,
-    Role      VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER'
+    birthdate DATE,
+    ROLE      VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER'
 );
 
 CREATE TABLE Address (
     AddressID     SERIAL PRIMARY KEY,
-    City          VARCHAR(100),
     Ward          VARCHAR(100),
-    AddressDetail VARCHAR(255),
+    City          VARCHAR(100),
+    addressdetail VARCHAR(255),
     Phone         VARCHAR(20),
-    IsDefault     BOOLEAN DEFAULT FALSE,
+    isdefault     BOOLEAN DEFAULT FALSE,
     UserID        INT NOT NULL,
     CONSTRAINT fk_address_user
         FOREIGN KEY (UserID) REFERENCES users(UserID)
@@ -88,22 +88,22 @@ CREATE TABLE Category (
 );
 
 CREATE TABLE Book (
-    BookID          SERIAL PRIMARY KEY,
+    bookID          SERIAL PRIMARY KEY,
     ISBN            VARCHAR(20) UNIQUE,
     Title           VARCHAR(255) NOT NULL,
-    Price           NUMERIC(15, 2) NOT NULL,
-    PublicationYear INT,
-    StockQuantity   INT NOT NULL DEFAULT 0,
+    Language        VARCHAR(50),
+    authorname      VARCHAR(255),
+    publishername   VARCHAR(255),
     Description     TEXT,
     Status          VARCHAR(20) NOT NULL DEFAULT 'Active',
-    NumPage         INT,
-    Language        VARCHAR(50),
+    numpage         INT,
     Nation          VARCHAR(50),
-    Size            VARCHAR(50),
+    size            VARCHAR(50),
     Type            VARCHAR(50),
-    AvgRating       NUMERIC(3, 2) DEFAULT 0.0,
-    AuthorName      VARCHAR(255),
-    PublisherName   VARCHAR(255),
+    Price           NUMERIC(15, 2) NOT NULL,
+    stockquantity   INT NOT NULL DEFAULT 0,
+    publicationyear INT,
+    Avgrating       NUMERIC(3, 2) DEFAULT 0.0,
     image_url       VARCHAR(255),
     CONSTRAINT chk_book_status
         CHECK (Status IN ('Active', 'Inactive'))
@@ -114,33 +114,33 @@ CREATE TABLE BookCategory (
     CategoryID INT NOT NULL,
     PRIMARY KEY (BookID, CategoryID),
     CONSTRAINT fk_bc_book
-        FOREIGN KEY (BookID) REFERENCES Book(BookID),
+        FOREIGN KEY (BookID) REFERENCES Book(bookID),
     CONSTRAINT fk_bc_category
         FOREIGN KEY (CategoryID) REFERENCES Category(CategoryID)
 );
 
 CREATE TABLE Review (
     ReviewID  SERIAL PRIMARY KEY,
+    createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Comment   TEXT,
     Rating    INT CHECK (Rating >= 1 AND Rating <= 5),
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UserID    INT NOT NULL,
     BookID    INT NOT NULL,
     CONSTRAINT fk_review_user
         FOREIGN KEY (UserID) REFERENCES users(UserID),
     CONSTRAINT fk_review_book
-        FOREIGN KEY (BookID) REFERENCES Book(BookID)
+        FOREIGN KEY (BookID) REFERENCES Book(bookID)
 );
 
 CREATE TABLE CartItem (
     CartID   INT NOT NULL,
     BookID   INT NOT NULL,
-    Quantity INT NOT NULL DEFAULT 1,
+    quantity INT NOT NULL DEFAULT 1,
     PRIMARY KEY (CartID, BookID),
     CONSTRAINT fk_ci_cart
         FOREIGN KEY (CartID) REFERENCES Cart(CartID),
     CONSTRAINT fk_ci_book
-        FOREIGN KEY (BookID) REFERENCES Book(BookID)
+        FOREIGN KEY (BookID) REFERENCES Book(bookID)
 );
 
 -- =========================================================
@@ -149,71 +149,71 @@ CREATE TABLE CartItem (
 
 CREATE TABLE Voucher (
     Code          VARCHAR(50) PRIMARY KEY,
-    Description   TEXT,
-    StartDay      DATE NOT NULL,
-    EndDay        DATE NOT NULL,
-    Quantity      INT NOT NULL,
-    MinOrderValue NUMERIC(15, 2),
-    MaxOrderValue NUMERIC(15, 2),
+    startdate     DATE NOT NULL,
+    enddate       DATE NOT NULL,
     Percent       INT,
+    maxordervalue NUMERIC(15, 2),
+    minordervalue NUMERIC(15, 2),
+    Quantity      INT NOT NULL,
+    Description   TEXT,
     UserID        INT NOT NULL,
     CONSTRAINT fk_voucher_user
         FOREIGN KEY (UserID) REFERENCES users(UserID)
 );
 
 CREATE TABLE OrderAddress (
-    OrderAddrID   SERIAL PRIMARY KEY,
+    orderaddrID   SERIAL PRIMARY KEY,
     City          VARCHAR(100),
     Ward          VARCHAR(100),
-    AddressDetail VARCHAR(255),
+    addressdetail VARCHAR(255),
     Phone         VARCHAR(20)
 );
 
 CREATE TABLE Orders (
     OrderID         SERIAL PRIMARY KEY,
-    OrderDate       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PaymentMethod   VARCHAR(20) NOT NULL,
-    CurrentStatus   VARCHAR(20) NOT NULL DEFAULT 'Pending',
-    ShippingFee     NUMERIC(15, 2) DEFAULT 0,
-    SubTotalPrice   NUMERIC(15, 2) DEFAULT 0,
-    DiscountTotal   NUMERIC(15, 2) DEFAULT 0,
-    GrandTotalPrice NUMERIC(15, 2) DEFAULT 0,
+    currentstatus   VARCHAR(20) NOT NULL DEFAULT 'Pending',
+    orderdate       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    paymentmethod   VARCHAR(20) NOT NULL,
+    shippingfee     NUMERIC(15, 2) DEFAULT 0,
+    subtotalprice   NUMERIC(15, 2) DEFAULT 0,
+    discounttotal   NUMERIC(15, 2) DEFAULT 0,
+    grandtotalprice NUMERIC(15, 2) DEFAULT 0,
     UserID          INT NOT NULL,
-    VoucherCode     VARCHAR(50),
-    OrderAddressID  INT NOT NULL,
+    orderaddressid  INT NOT NULL,
+    vouchercode     VARCHAR(50),
     CONSTRAINT fk_order_user
         FOREIGN KEY (UserID) REFERENCES users(UserID),
     CONSTRAINT fk_order_voucher
-        FOREIGN KEY (VoucherCode) REFERENCES Voucher(Code),
+        FOREIGN KEY (vouchercode) REFERENCES Voucher(Code),
     CONSTRAINT fk_order_orderaddress
-        FOREIGN KEY (OrderAddressID) REFERENCES OrderAddress(OrderAddrID),
+        FOREIGN KEY (orderaddressid) REFERENCES OrderAddress(orderaddrID),
     CONSTRAINT chk_orders_status
-        CHECK (CurrentStatus IN ('Pending','Processing','Completed','Cancelled')),
+        CHECK (currentstatus IN ('Pending','Processing','Completed','Cancelled')),
     CONSTRAINT chk_orders_payment_method
-        CHECK (PaymentMethod IN ('COD','VNPAY'))
+        CHECK (paymentmethod IN ('COD','VNPAY'))
 );
 
 CREATE TABLE OrderItem (
     OrderID        INT NOT NULL,
     BookID         INT NOT NULL,
     Quantity       INT NOT NULL,
-    LineTotalPrice NUMERIC(15, 2) NOT NULL,
+    linetotalprice NUMERIC(15, 2) NOT NULL,
     PRIMARY KEY (OrderID, BookID),
     CONSTRAINT fk_oi_order
         FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
     CONSTRAINT fk_oi_book
-        FOREIGN KEY (BookID) REFERENCES Book(BookID)
+        FOREIGN KEY (BookID) REFERENCES Book(bookID)
 );
 
 CREATE TABLE Payment (
     PaymentID       SERIAL PRIMARY KEY,
     OrderID         INT NOT NULL,
-    TransactionCode VARCHAR(100),
-    GatewayResponse TEXT,
-    PaidAt          TIMESTAMP,
-    PayStatus       VARCHAR(50),
-    Gateway         VARCHAR(50),
+    transactioncode VARCHAR(100),
+    paidat          TIMESTAMP,
+    paystatus       VARCHAR(50),
     Amount          NUMERIC(15, 2),
+    Gateway         VARCHAR(50),
+    gatewayresponse TEXT,
     CONSTRAINT fk_payment_order
         FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
 );
@@ -222,7 +222,7 @@ CREATE TABLE Payment (
 -- 4. TRIGGER & FUNCTION HỆ THỐNG
 -- =========================================================
 
--- 4.1. REVIEW → CẬP NHẬT AvgRating CỦA BOOK
+-- 4.1. REVIEW → CẬP NHẬT Avgrating CỦA BOOK
 CREATE OR REPLACE FUNCTION fn_update_book_avg_rating()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -234,6 +234,7 @@ BEGIN
     ELSIF TG_OP = 'DELETE' THEN
         v_book_id := OLD.BookID;
     ELSE
+        -- Nếu đổi sách trong review
         IF NEW.BookID <> OLD.BookID THEN
             SELECT AVG(Rating)::NUMERIC(3,2)
             INTO v_avg
@@ -241,8 +242,8 @@ BEGIN
             WHERE BookID = OLD.BookID;
 
             UPDATE Book
-            SET AvgRating = COALESCE(v_avg, 0)
-            WHERE BookID = OLD.BookID;
+            SET Avgrating = COALESCE(v_avg, 0)
+            WHERE bookID = OLD.BookID;
 
             v_book_id := NEW.BookID;
         ELSE
@@ -256,8 +257,8 @@ BEGIN
     WHERE BookID = v_book_id;
 
     UPDATE Book
-    SET AvgRating = COALESCE(v_avg, 0)
-    WHERE BookID = v_book_id;
+    SET Avgrating = COALESCE(v_avg, 0)
+    WHERE bookID = v_book_id;
 
     RETURN NULL;
 END;
@@ -269,7 +270,7 @@ FOR EACH ROW
 EXECUTE FUNCTION fn_update_book_avg_rating();
 
 
--- 4.2. ORDERITEM THAY ĐỔI → CẬP NHẬT STOCKQUANTITY
+-- 4.2. ORDERITEM THAY ĐỔI → CẬP NHẬT stockquantity
 --     (CHECK KHÔNG CHO ÂM KHO)
 CREATE OR REPLACE FUNCTION fn_update_stock_on_orderitem()
 RETURNS TRIGGER AS $$
@@ -280,7 +281,7 @@ DECLARE
     v_diff          INT;
 BEGIN
     IF TG_OP = 'INSERT' THEN
-        SELECT CurrentStatus INTO v_status_new
+        SELECT currentstatus INTO v_status_new
         FROM Orders WHERE OrderID = NEW.OrderID;
 
         IF v_status_new IS NULL THEN
@@ -288,8 +289,8 @@ BEGIN
         END IF;
 
         IF v_status_new <> 'Cancelled' THEN
-            SELECT StockQuantity INTO v_current_stock
-            FROM Book WHERE BookID = NEW.BookID;
+            SELECT stockquantity INTO v_current_stock
+            FROM Book WHERE bookID = NEW.BookID;
 
             IF v_current_stock < NEW.Quantity THEN
                 RAISE EXCEPTION 'Không đủ hàng trong kho! Hiện có: %, Cần: %',
@@ -297,24 +298,25 @@ BEGIN
             END IF;
 
             UPDATE Book
-            SET StockQuantity = StockQuantity - NEW.Quantity
-            WHERE BookID = NEW.BookID;
+            SET stockquantity = stockquantity - NEW.Quantity
+            WHERE bookID = NEW.BookID;
         END IF;
 
     ELSIF TG_OP = 'UPDATE' THEN
-        SELECT CurrentStatus INTO v_status_new
+        SELECT currentstatus INTO v_status_new
         FROM Orders WHERE OrderID = NEW.OrderID;
 
-        SELECT CurrentStatus INTO v_status_old
+        SELECT currentstatus INTO v_status_old
         FROM Orders WHERE OrderID = OLD.OrderID;
 
+        -- Cùng một OrderID + BookID, chỉ đổi Quantity
         IF NEW.OrderID = OLD.OrderID AND NEW.BookID = OLD.BookID THEN
             IF v_status_new <> 'Cancelled' THEN
                 v_diff := NEW.Quantity - OLD.Quantity;
 
                 IF v_diff > 0 THEN
-                    SELECT StockQuantity INTO v_current_stock
-                    FROM Book WHERE BookID = NEW.BookID;
+                    SELECT stockquantity INTO v_current_stock
+                    FROM Book WHERE bookID = NEW.BookID;
 
                     IF v_current_stock < v_diff THEN
                         RAISE EXCEPTION
@@ -324,20 +326,21 @@ BEGIN
                 END IF;
 
                 UPDATE Book
-                SET StockQuantity = StockQuantity - v_diff
-                WHERE BookID = NEW.BookID;
+                SET stockquantity = stockquantity - v_diff
+                WHERE bookID = NEW.BookID;
             END IF;
 
         ELSE
+            -- Thay đổi OrderID hoặc BookID
             IF v_status_old <> 'Cancelled' THEN
                 UPDATE Book
-                SET StockQuantity = StockQuantity + OLD.Quantity
-                WHERE BookID = OLD.BookID;
+                SET stockquantity = stockquantity + OLD.Quantity
+                WHERE bookID = OLD.BookID;
             END IF;
 
             IF v_status_new <> 'Cancelled' THEN
-                SELECT StockQuantity INTO v_current_stock
-                FROM Book WHERE BookID = NEW.BookID;
+                SELECT stockquantity INTO v_current_stock
+                FROM Book WHERE bookID = NEW.BookID;
 
                 IF v_current_stock < NEW.Quantity THEN
                     RAISE EXCEPTION
@@ -346,19 +349,19 @@ BEGIN
                 END IF;
 
                 UPDATE Book
-                SET StockQuantity = StockQuantity - NEW.Quantity
-                WHERE BookID = NEW.BookID;
+                SET stockquantity = stockquantity - NEW.Quantity
+                WHERE bookID = NEW.BookID;
             END IF;
         END IF;
 
     ELSIF TG_OP = 'DELETE' THEN
-        SELECT CurrentStatus INTO v_status_old
+        SELECT currentstatus INTO v_status_old
         FROM Orders WHERE OrderID = OLD.OrderID;
 
         IF v_status_old <> 'Cancelled' THEN
             UPDATE Book
-            SET StockQuantity = StockQuantity + OLD.Quantity
-            WHERE BookID = OLD.BookID;
+            SET stockquantity = stockquantity + OLD.Quantity
+            WHERE bookID = OLD.BookID;
         END IF;
     END IF;
 
@@ -372,7 +375,7 @@ FOR EACH ROW
 EXECUTE FUNCTION fn_update_stock_on_orderitem();
 
 
--- 4.3. ĐỔI CurrentStatus CỦA ORDERS → CẬP NHẬT STOCK
+-- 4.3. ĐỔI currentstatus CỦA ORDERS → CẬP NHẬT STOCK
 --   - (bất kỳ trừ Cancelled) → Cancelled : +stock
 --   - Cancelled → trạng thái khác       : -stock
 CREATE OR REPLACE FUNCTION fn_update_stock_on_order_status()
@@ -380,12 +383,13 @@ RETURNS TRIGGER AS $$
 DECLARE
     rec RECORD;
 BEGIN
-    IF NEW.CurrentStatus = OLD.CurrentStatus THEN
+    IF NEW.currentstatus = OLD.currentstatus THEN
         RETURN NULL;
     END IF;
 
-    IF OLD.CurrentStatus <> 'Cancelled'
-       AND NEW.CurrentStatus = 'Cancelled' THEN
+    -- Chuyển từ khác Cancelled sang Cancelled -> trả lại stock
+    IF OLD.currentstatus <> 'Cancelled'
+       AND NEW.currentstatus = 'Cancelled' THEN
 
         FOR rec IN
             SELECT BookID, Quantity
@@ -393,12 +397,13 @@ BEGIN
             WHERE OrderID = NEW.OrderID
         LOOP
             UPDATE Book
-            SET StockQuantity = StockQuantity + rec.Quantity
-            WHERE BookID = rec.BookID;
+            SET stockquantity = stockquantity + rec.Quantity
+            WHERE bookID = rec.BookID;
         END LOOP;
 
-    ELSIF OLD.CurrentStatus = 'Cancelled'
-          AND NEW.CurrentStatus <> 'Cancelled' THEN
+    -- Chuyển từ Cancelled sang trạng thái khác -> trừ stock
+    ELSIF OLD.currentstatus = 'Cancelled'
+          AND NEW.currentstatus <> 'Cancelled' THEN
 
         FOR rec IN
             SELECT BookID, Quantity
@@ -406,8 +411,8 @@ BEGIN
             WHERE OrderID = NEW.OrderID
         LOOP
             UPDATE Book
-            SET StockQuantity = StockQuantity - rec.Quantity
-            WHERE BookID = rec.BookID;
+            SET stockquantity = stockquantity - rec.Quantity
+            WHERE bookID = rec.BookID;
         END LOOP;
     END IF;
 
@@ -416,7 +421,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_orders_status_update_stock
-AFTER UPDATE OF CurrentStatus ON Orders
+AFTER UPDATE OF currentstatus ON Orders
 FOR EACH ROW
 EXECUTE FUNCTION fn_update_stock_on_order_status();
 
@@ -464,18 +469,18 @@ RETURNS TABLE (
 BEGIN
     RETURN QUERY
     SELECT
-        b.BookID,
+        b.bookID,
         b.Title,
-        b.AuthorName,
-        b.PublisherName,
+        b.authorname      AS AuthorName,
+        b.publishername   AS PublisherName,
         b.Price,
-        b.StockQuantity,
+        b.stockquantity   AS StockQuantity,
         b.Status,
-        b.AvgRating,
-        b.image_url,
+        b.Avgrating       AS AvgRating,
+        b.image_url       AS ImageUrl,
         STRING_AGG(c.Name, ', ' ORDER BY c.Name) AS Categories
     FROM Book b
-    LEFT JOIN BookCategory bc ON b.BookID = bc.BookID
+    LEFT JOIN BookCategory bc ON b.bookID = bc.BookID
     LEFT JOIN Category     c  ON bc.CategoryID = c.CategoryID
     WHERE
         (p_keyword IS NULL OR p_keyword = '' OR
@@ -484,7 +489,7 @@ BEGIN
         AND (p_price_max IS NULL OR b.Price <= p_price_max)
         AND (p_cat_name IS NULL OR p_cat_name = '' OR
              c.Name ILIKE '%' || p_cat_name || '%')
-    GROUP BY b.BookID
+    GROUP BY b.bookID
     ORDER BY
         CASE WHEN p_sort = 'PRICE_ASC'  THEN b.Price END ASC,
         CASE WHEN p_sort = 'PRICE_DESC' THEN b.Price END DESC,
@@ -498,7 +503,7 @@ $$ LANGUAGE plpgsql;
 -- =========================================================
 
 -- 5.1 USERS
-INSERT INTO users (UserName, Password, FullName, Email, Phone, Role) VALUES
+INSERT INTO users (Username, Password, Fullname, Email, Phone, ROLE) VALUES
 ('admin_hcmut', 'admin123', 'Admin Bách Khoa', 'admin@hcmut.edu.vn', '0909123456', 'ADMIN'),
 ('sv_bachkhoa', '123456',   'Lê Văn Tèo',      'teo.lv21@hcmut.edu.vn', '0918123456', 'CUSTOMER'),
 ('sv_k21',      '123456',   'Trần Thị Nở',     'no.tt21@hcmut.edu.vn',  '0987654321', 'CUSTOMER');
@@ -514,8 +519,8 @@ INSERT INTO Category (Name) VALUES
 
 -- 5.3 BOOK (40 CUỐN)
 INSERT INTO Book
-(Title, AuthorName, PublisherName, Price, StockQuantity,
- Description, PublicationYear, NumPage, Size, Type, Status, image_url)
+(Title, authorname, publishername, Price, stockquantity,
+ Description, publicationyear, numpage, size, Type, Status, image_url)
 VALUES
 -- --- NHÓM TOÁN & ĐẠI CƯƠNG (20 cuốn) ---
 ('Giải tích 1', 'Đỗ Công Khanh', 'NXB ĐHQG TP.HCM', 55000, 200,
@@ -665,30 +670,35 @@ INSERT INTO BookCategory (BookID, CategoryID) VALUES
 (36, 3), (37, 3), (38, 2), (39, 2), (40, 3);
 
 -- 5.5 ADDRESS
-INSERT INTO Address (City, Ward, AddressDetail, Phone, IsDefault, UserID) VALUES
-('TP.HCM', 'Thủ Đức', 'KTX Khu A, ĐHQG', '0918123456', TRUE, 2),
-('TP.HCM', 'Bình Thạnh', '123 Xô Viết Nghệ Tĩnh', '0987654321', TRUE, 3);
+INSERT INTO Address (Ward, City, addressdetail, Phone, isdefault, UserID) VALUES
+('Thủ Đức', 'TP.HCM', 'KTX Khu A, ĐHQG', '0918123456', TRUE, 2),
+('Bình Thạnh', 'TP.HCM', '123 Xô Viết Nghệ Tĩnh', '0987654321', TRUE, 3);
 
 -- Cart được tạo tự động bởi trigger khi insert users
 -- CartID dự kiến: 1→user1, 2→user2, 3→user3
-INSERT INTO CartItem (CartID, BookID, Quantity) VALUES
+INSERT INTO CartItem (CartID, BookID, quantity) VALUES
 (2, 23, 1),
 (2, 25, 2),
 (3, 40, 1);
 
 -- 5.6 VOUCHER
 INSERT INTO Voucher
-(Code, Description, StartDay, EndDay, Quantity,
- MinOrderValue, MaxOrderValue, Percent, UserID)
+(Code, startdate, enddate, Percent,
+ maxordervalue, minordervalue, Quantity, Description, UserID)
 VALUES
-('WELCOME10', '10% off for new users',   '2025-01-01', '2025-12-31', 100, 100000, 1000000, 10, 1),
-('SUMMER20',  '20% off summer sale',     '2025-06-01', '2025-08-31',  50, 200000, 2000000, 20, 1),
-('FREESHIP',  'Free shipping over 100k', '2025-01-01', '2025-12-31', 200, 100000, 5000000,  0, 1),
-('VIP30',     '30% off for VIP users',   '2025-01-01', '2025-12-31',  20, 500000, 5000000, 30, 1),
-('FLASH5',    '5% flash sale',           '2025-02-01', '2025-02-28', 300,  50000,  500000,  5, 1);
+('WELCOME10', '2025-01-01', '2025-12-31', 10,
+ 1000000, 100000, 100, '10% off for new users',   1),
+('SUMMER20',  '2025-06-01', '2025-08-31', 20,
+ 2000000, 200000,  50, '20% off summer sale',     1),
+('FREESHIP',  '2025-01-01', '2025-12-31', 0,
+ 5000000, 100000, 200, 'Free shipping over 100k', 1),
+('VIP30',     '2025-01-01', '2025-12-31', 30,
+ 5000000, 500000,  20, '30% off for VIP users',   1),
+('FLASH5',    '2025-02-01', '2025-02-28', 5,
+ 500000,   50000, 300, '5% flash sale',           1);
 
 -- 5.7 ORDERADDRESS
-INSERT INTO OrderAddress (City, Ward, AddressDetail, Phone) VALUES
+INSERT INTO OrderAddress (City, Ward, addressdetail, Phone) VALUES
 ('Ho Chi Minh', 'District 1', '123 Nguyen Hue - Order',   '0900000003'),
 ('Ho Chi Minh', 'District 3', '45 Vo Van Tan - Order',    '0900000003'),
 ('Ha Noi',      'Ba Dinh',    '12 Dien Bien Phu - Order', '0900000004'),
@@ -697,9 +707,9 @@ INSERT INTO OrderAddress (City, Ward, AddressDetail, Phone) VALUES
 
 -- 5.8 ORDERS
 INSERT INTO Orders
-(OrderDate, PaymentMethod, CurrentStatus,
- ShippingFee, SubTotalPrice, DiscountTotal, GrandTotalPrice,
- UserID, VoucherCode, OrderAddressID)
+(orderdate, paymentmethod, currentstatus,
+ shippingfee, subtotalprice, discounttotal, grandtotalprice,
+ UserID, vouchercode, orderaddressid)
 VALUES
 ('2025-01-20 09:00:00', 'COD',   'Pending',
  30000, 370000, 50000, 350000,
@@ -722,7 +732,7 @@ VALUES
  3, 'FREESHIP', 5);
 
 -- 5.9 ORDERITEM
-INSERT INTO OrderItem (OrderID, BookID, Quantity, LineTotalPrice) VALUES
+INSERT INTO OrderItem (OrderID, BookID, Quantity, linetotalprice) VALUES
 (1, 1, 1, 100000),
 (1, 2, 1, 150000),
 (1, 4, 1, 120000),
@@ -736,23 +746,13 @@ INSERT INTO OrderItem (OrderID, BookID, Quantity, LineTotalPrice) VALUES
 
 -- 5.10 PAYMENT
 INSERT INTO Payment
-(OrderID, TransactionCode, GatewayResponse,
- PaidAt, PayStatus, Gateway, Amount)
+(OrderID, transactioncode, paidat, paystatus, Gateway, Amount, gatewayresponse)
 VALUES
-(1, 'TXN001', 'Payment received',
- '2025-01-20 09:30:00', 'PAID',   'COD',   350000),
-
-(2, 'TXN002', 'Payment pending',
- '2025-01-21 10:05:00', 'PENDING','VNPAY', 270000),
-
-(3, 'TXN003', 'Payment successful',
- '2025-01-22 11:15:00', 'PAID',   'VNPAY', 257000),
-
-(4, 'TXN004', 'Refund processed',
- '2025-01-23 16:00:00', 'REFUND', 'VNPAY',  50000),
-
-(5, 'TXN005', 'Payment successful',
- '2025-01-24 13:20:00', 'PAID',   'VNPAY', 110000);
+(1, 'TXN001', '2025-01-20 09:30:00', 'PAID',   'COD',   350000, 'Payment received'),
+(2, 'TXN002', '2025-01-21 10:05:00', 'PENDING','VNPAY', 270000, 'Payment pending'),
+(3, 'TXN003', '2025-01-22 11:15:00', 'PAID',   'VNPAY', 257000, 'Payment successful'),
+(4, 'TXN004', '2025-01-23 16:00:00', 'REFUND', 'VNPAY',  50000, 'Refund processed'),
+(5, 'TXN005', '2025-01-24 13:20:00', 'PAID',   'VNPAY', 110000, 'Payment successful');
 
 -- =========================================================
 -- 6. RESET SEQUENCE CHO CÁC BẢNG CÓ SERIAL (AN TOÀN KHI RỖNG)
@@ -820,3 +820,4 @@ SELECT setval(
     COALESCE(MAX(paymentid), 0) + 1,
     false
 ) FROM Payment;
+

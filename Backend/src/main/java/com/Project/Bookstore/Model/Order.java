@@ -41,6 +41,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "UserID")
+//    @JsonIgnoreProperties("password")
     private User user;
     @OneToOne
     @JoinColumn(name = "orderaddressid")

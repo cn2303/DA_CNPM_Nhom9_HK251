@@ -41,10 +41,13 @@ public class UserService {
         return this.userRepository.save(user);
     }
     public User updateUser(User user) {
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
+        User currentUser = this.getUserById(user.getId());
+        if(!currentUser.getPassword().equals(user.getPassword())){
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         return this.userRepository.save(user);
+
     }
     public void deleteUser(Integer id) {
         this.userRepository.deleteById(id);

@@ -1,5 +1,6 @@
 package com.Project.Bookstore.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,5 +36,6 @@ public class Voucher {
 
     @ManyToOne
     @JoinColumn(name = "UserID")
+//    @JsonIgnoreProperties("password")
     private User user;
 }

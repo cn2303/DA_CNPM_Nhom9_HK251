@@ -27,6 +27,7 @@ public class UserController {
     public List<User> getAllUsers() {
         return this.userService.getAllUser();
     }
+
     @GetMapping("/myinfo")
     public ResponseEntity<?> getMyInfo() {
         try{

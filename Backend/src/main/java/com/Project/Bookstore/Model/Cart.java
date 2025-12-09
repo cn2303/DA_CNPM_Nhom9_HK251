@@ -22,6 +22,7 @@ public class Cart {
     //@OneToOne(fetch = FetchType.LAZY)
     @OneToOne
     @JoinColumn(name = "UserID", unique = true)
+//    @JsonIgnoreProperties("password")
     private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,  orphanRemoval = true)

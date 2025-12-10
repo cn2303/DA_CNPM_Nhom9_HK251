@@ -13,6 +13,7 @@
   width: 100%;
   gap: 20px;
   padding: 20px;
+  align-items: flex-start;
 }
 
 .home-main {
@@ -20,6 +21,45 @@
   display: flex;
   flex-direction: column;
   gap: 40px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 0px;
+  padding: 20px;
+}
+
+.pagination-btn {
+  padding: 8px 12px;
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #1e40af;
+}
+
+.pagination-btn:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  color: #0A0A0A;
+  min-width: 12px;
+  text-align: center;
 }
 
 @media (max-width: 768px) {
@@ -30,4 +70,10 @@
   .home-main {
     gap: 30px;
   }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
 }
+

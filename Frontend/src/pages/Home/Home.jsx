@@ -1,119 +1,175 @@
+import { useEffect, useState } from "react"
+import axios from "axios"
 import Header from "../../components/Header/Header"
 import CategorySidebar from "../../components/CategorySidebar/CategorySidebar"
 import FeaturedCarousel from "../../components/FeaturedCarousel/FeaturedCarousel"
 import ProductSection from "../../components/ProductSection/ProductSection"
 import Footer from "../../components/Footer/Footer"
 import "./Home.css"
-import dsaImage from "../../assets/DSA.jpg"
-import osImage from "../../assets/OS.jpg"
-import pplImage from "../../assets/PPL.png"
+
+const BOOKS_PER_PAGE = 6
 
 export default function Home({ onNavigate, currentUser, setCurrentUser }) {
-  const bookImages = [dsaImage, osImage, pplImage]
+  const [allBooks, setAllBooks] = useState([])
+  const [featuredBooks, setFeaturedBooks] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [featuredLoading, setFeaturedLoading] = useState(false)
+  const [featuredError, setFeaturedError] = useState("")
+  const [categories, setCategories] = useState([])
+  const [refreshCartCount, setRefreshCartCount] = useState(null)
+  const [newBooks, setNewBooks] = useState([])
+  const [newBooksLoading, setNewBooksLoading] = useState(false)
 
-  const newBooks = [
-    {
-      id: 1,
-      title: "Book 1",
-      image: bookImages[0],
-    },
-    {
-      id: 2,
-      title: "Book 2",
-      image: bookImages[1],
-    },
-    {
-      id: 3,
-      title: "Book 3",
-      image: bookImages[2],
-    },
-    {
-      id: 4,
-      title: "Book 4",
-      image: bookImages[0],
-    },
-  ]
+  useEffect(() => {
+    const fetchFeaturedBooks = async () => {
+      setFeaturedLoading(true)
+      setFeaturedError("")
 
-  const featuredBooks = [
-    {
-      id: 1,
-      title: "Giáo trình Văn lý đại cương (Tập I & II)",
-      author: "PGS.TS Nguyễn Thị Hảo",
-      image: bookImages[0],
-      price: 120000,
-      originalPrice: 150000,
-      rating: 5,
-      reviews: 125,
-      badge: "Sale",
-    },
-    {
-      id: 2,
-      title: "Nhập môn Tiếng Trung Quốc (Quyển 1)",
-      author: "TS. Lê Thị Thu Hà",
-      image: bookImages[1],
-      price: 95000,
-      originalPrice: 120000,
-      rating: 5,
-      reviews: 98,
-      badge: null,
-    },
-    {
-      id: 3,
-      title: "300 Bài tập cơ bản và nâng cao môn hóa học",
-      author: "TS. Nguyễn Văn Minh",
-      image: bookImages[2],
-      price: 85000,
-      originalPrice: 100000,
-      rating: 5,
-      reviews: 156,
-      badge: "Sale",
-    },
-    {
-      id: 4,
-      title: "Luận án Hóa học",
-      author: "PGS. Trần Thanh Hải",
-      image: bookImages[0],
-      price: 110000,
-      originalPrice: 140000,
-      rating: 4,
-      reviews: 89,
-      badge: null,
-    },
-    {
-      id: 5,
-      title: "Phát triển Bền vững: Cơ Lý hóa",
-      author: "GS.TS Lê Anh Tuấn",
-      image: bookImages[1],
-      price: 130000,
-      originalPrice: 160000,
-      rating: 5,
-      reviews: 142,
-      badge: null,
-    },
-    {
-      id: 6,
-      title: "Vật Lý Phóng Xạ và Ứng Dụng",
-      author: "TS. Nguyễn Quốc Hùng",
-      image: bookImages[2],
-      price: 98000,
-      originalPrice: 120000,
-      rating: 5,
-      reviews: 167,
-      badge: "Hot",
-    },
-  ]
+      try {
+        const response = await axios.get("http://localhost:8080/book")
+        const data = response.data
+
+        const mappedBooks = (Array.isArray(data) ? data : []).map((book, idx) => {
+          const price = Number(book.price) || 0
+          const avgRating = typeof book.averageRating === "number" ? book.averageRating : 0
+          return {
+            id: book.id ?? idx,
+            title: book.title ?? "Chưa có tên",
+            author: book.author ?? "Đang cập nhật",
+            image: book.imageUrl || bookImages[idx % bookImages.length],
+            price,
+            originalPrice: price ? Math.round(price * 1.1) : null,
+            rating: Math.max(0, Math.min(5, Math.round(avgRating))),
+            reviews: book.quantity ?? 0,
+            badge: book.status && book.status !== "Active" ? book.status : null,
+            status: book.status ?? null,
+            stockQuantity: typeof book.stockQuantity === "number" ? book.stockQuantity : book.quantity ?? null,
+          }
+        })
+
+        setAllBooks(mappedBooks)
+        setCurrentPage(1)
+      } catch (error) {
+        setFeaturedError("Không thể tải danh sách sách. Vui lòng thử lại.")
+        console.error("Failed to load featured books", error)
+      } finally {
+        setFeaturedLoading(false)
+      }
+    }
+
+    fetchFeaturedBooks()
+  }, [])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/category")
+        setCategories(Array.isArray(response.data) ? response.data : [])
+      } catch (error) {
+        console.error("Failed to load categories", error)
+      }
+    }
+
+    fetchCategories()
+  }, [])
+
+  useEffect(() => {
+    const fetchNewBooks = async () => {
+      setNewBooksLoading(true)
+
+      try {
+        const response = await axios.get("http://localhost:8080/book")
+        const data = response.data
+
+        const sortedBooks = (Array.isArray(data) ? data : [])
+          .filter(book => book.publicationYear)
+          .sort((a, b) => b.publicationYear - a.publicationYear)
+          .slice(0, 4)
+          .map((book, idx) => ({
+            id: book.id ?? idx,
+            title: book.title ?? "Chưa có tên",
+            image: book.imageUrl || bookImages[idx % bookImages.length],
+            publicationYear: book.publicationYear,
+            status: book.status ?? null,
+            stockQuantity: typeof book.stockQuantity === "number" ? book.stockQuantity : book.quantity ?? null,
+          }))
+
+        setNewBooks(sortedBooks)
+      } catch (error) {
+        console.error("Failed to load new books", error)
+      } finally {
+        setNewBooksLoading(false)
+      }
+    }
+
+    fetchNewBooks()
+  }, [])
+
+  useEffect(() => {
+    const startIdx = (currentPage - 1) * BOOKS_PER_PAGE
+    const endIdx = startIdx + BOOKS_PER_PAGE
+    setFeaturedBooks(allBooks.slice(startIdx, endIdx))
+  }, [allBooks, currentPage])
+
+  const totalPages = Math.ceil(allBooks.length / BOOKS_PER_PAGE)
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+  }
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+  }
 
   return (
     <div className="home-container">
-      <Header onNavigate={onNavigate} currentUser={currentUser} setCurrentUser={setCurrentUser} />
+      <Header onNavigate={onNavigate} currentUser={currentUser} setCurrentUser={setCurrentUser} onCartCountUpdate={setRefreshCartCount} />
 
       <div className="home-content">
-        <CategorySidebar />
+        <CategorySidebar
+          categories={categories}
+          onSelectCategory={(categoryId) => onNavigate?.("category", null, null, null, null, categoryId)}
+          onViewAllCategories={() => onNavigate?.("category")}
+        />
 
         <main className="home-main">
-          <FeaturedCarousel books={newBooks} />
+          {newBooksLoading ? (
+            <p className="section-loading">Đang tải sách mới...</p>
+          ) : (
+            <FeaturedCarousel books={newBooks} onNavigate={onNavigate} />
+          )}
 
-          <ProductSection title="Sách nổi bật" viewAllLink="Xem toàn bộ" books={featuredBooks} onNavigate={onNavigate} />
+          {featuredError && <p className="section-error">{featuredError}</p>}
+          {featuredLoading && <p className="section-loading">Đang tải sách...</p>}
+          <ProductSection title="Sách nổi bật" viewAllLink="Xem toàn bộ" books={featuredBooks} onNavigate={onNavigate} currentUser={currentUser} onCartUpdate={refreshCartCount} onViewAll={() => onNavigate?.("category")} />
+
+          {!featuredError && !featuredLoading && totalPages > 1 && (
+            <div className="pagination">
+              <button
+                className="pagination-btn"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+              >
+                ←
+              </button>
+              <span className="pagination-info">
+                Trang {currentPage} / {totalPages}
+              </span>
+              <button
+                className="pagination-btn"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                →
+              </button>
+            </div>
+          )}
         </main>
       </div>
 

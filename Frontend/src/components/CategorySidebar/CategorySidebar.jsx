@@ -1,22 +1,16 @@
 import { ChevronRight, List } from "lucide-react"
 import "./CategorySidebar.css"
 
-const categories = [
-  "Kỹ thuật",
-  "Xã Hội",
-  "Y - Sinh học",
-  "Tâm Lý học",
-  "Tài chính - Kinh Tế",
-  "Khoa Học Tự Nhiên",
-  "Kỹ Năng - Nghiệp vụ",
-  "Công Nghệ Thông Tin",
-  "Đại cương - Môi Trường",
-  "Pháp Luật",
-  "Ngoại ngữ",
-  "Nông - Lâm - Ngư",
-]
+export default function CategorySidebar({
+  categories = [],
+  selectedCategoryId = null,
+  onSelectCategory,
+  onViewAllCategories,
+}) {
+  const handleSelect = (categoryId) => {
+    if (onSelectCategory) onSelectCategory(categoryId)
+  }
 
-export default function CategorySidebar() {
   return (
     <aside className="category-sidebar">
       <div className="sidebar-header">
@@ -25,15 +19,20 @@ export default function CategorySidebar() {
       </div>
 
       <div className="categories-list">
-        {categories.map((category, index) => (
-          <div key={index} className="category-item">
-            <span>{category}</span>
+        {categories.map((category) => (
+          <button
+            key={category.id ?? category.name}
+            className={`category-item ${selectedCategoryId === category.id ? "active" : ""}`}
+            onClick={() => handleSelect(category.id)}
+            type="button"
+          >
+            <span>{category.name}</span>
             <ChevronRight size={18} />
-          </div>
+          </button>
         ))}
       </div>
 
-      <button className="view-all-categories">
+      <button className="view-all-categories" type="button" onClick={onViewAllCategories}>
         <List size={16} />
         Tất cả danh mục
       </button>

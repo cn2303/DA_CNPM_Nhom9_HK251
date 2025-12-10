@@ -1,0 +1,436 @@
+.account-page {
+  background-color: #F9FAFB;
+  min-height: calc(100vh - 146px);
+  padding: 0;
+}
+
+.breadcrumb {
+  width: 100%;
+  height: 45px;
+  padding: 12px 80px;
+  background: white;
+  border-bottom: 0.8px solid rgba(0, 0, 0, 0.10);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  line-height: 20px;
+}
+
+.breadcrumb-link {
+  color: #101828;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  color: #155DFC;
+}
+
+.breadcrumb-separator {
+  color: #4A5565;
+  margin: 0 4px;
+}
+
+.account-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.account-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 0.8px solid rgba(0, 0, 0, 0.10);
+}
+
+.account-header h2 {
+  font-size: 20px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  line-height: 30px;
+  color: #0A0A0A;
+  margin: 0;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+.edit-button {
+  padding: 8px 24px;
+  background: #030213;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  height: 36px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.edit-button:hover {
+  background: #0a0a1a;
+}
+
+.cancel-button {
+  padding: 8px 24px;
+  background: white;
+  color: #0A0A0A;
+  border: 0.8px solid rgba(0, 0, 0, 0.10);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  height: 36px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-button:hover {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.20);
+}
+
+.save-button-header {
+  padding: 8px 24px;
+  background: #030213;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  height: 36px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.save-button-header:hover {
+  background: #0a0a1a;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  margin-bottom: 24px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 12px;
+  position: relative;
+  border: 3px solid #f0f0f0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.account-error {
+  color: #e7000b;
+  background: #ffe8e8;
+  border: 1px solid #ffc4c4;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+}
+
+.address-hint {
+  display: block;
+  margin-top: 4px;
+  color: #6A7282;
+  font-size: 12px;
+  font-family: 'Arimo', sans-serif;
+}
+
+.profile-form {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  font-weight: 400;
+  color: #0A0A0A;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 0.8px solid rgba(0, 0, 0, 0.10);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  background: #F9FAFB;
+  color: #0A0A0A;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #155DFC;
+  background: white;
+}
+
+.form-group input:disabled {
+  color: #4A5565;
+  background: #F9FAFB;
+  cursor: not-allowed;
+}
+
+.form-group input::placeholder {
+  color: #9CA3AF;
+}
+
+.address-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 0.8px solid rgba(0, 0, 0, 0.08);
+}
+
+.address-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.address-header-row h3 {
+  margin: 0;
+  font-family: 'Arimo', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #0A0A0A;
+}
+
+.add-address-button {
+  padding: 8px 16px;
+  background: #030213;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  cursor: pointer;
+}
+
+.add-address-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.address-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.address-card {
+  border: 0.8px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  background: #F9FAFB;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.address-card.is-default {
+  border-color: #155DFC;
+  background: #eef3ff;
+}
+
+.address-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.address-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: 'Arimo', sans-serif;
+}
+
+.address-line {
+  font-size: 14px;
+  color: #0A0A0A;
+}
+
+.address-line.subtle {
+  color: #4A5565;
+}
+
+.default-badge {
+  background: #155DFC;
+  color: white;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: 'Arimo', sans-serif;
+  height: fit-content;
+}
+
+.address-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.address-actions button,
+.address-form-actions button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 0.8px solid rgba(0, 0, 0, 0.08);
+  background: white;
+  font-family: 'Arimo', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.address-form-actions .save-button-header {
+  background: #155DFC;
+  color: white;
+  border: none;
+}
+
+.address-form-actions .save-button-header:hover {
+  background: #155DFC;
+}
+
+.address-actions button:disabled,
+.address-form-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.address-actions button.secondary {
+  background: #eef3ff;
+  border-color: #155DFC;
+  color: #0A0A0A;
+}
+
+.address-actions button.ghost,
+.address-form-actions button.ghost {
+  background: white;
+}
+
+.address-actions button.danger {
+  background: #ffe8e8;
+  border-color: #ffc4c4;
+  color: #b91c1c;
+}
+
+.address-empty {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 0.8px dashed rgba(0, 0, 0, 0.12);
+  font-family: 'Arimo', sans-serif;
+  color: #4A5565;
+  margin-bottom: 12px;
+}
+
+.address-form {
+  margin-top: 12px;
+  padding: 16px;
+  border: 0.8px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  background: #F9FAFB;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.address-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Arimo', sans-serif;
+  color: #0A0A0A;
+}
+
+.address-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .profile-section {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .account-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .edit-button {
+    width: 100%;
+  }
+
+  .address-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .address-actions {
+    width: 100%;
+  }
+}

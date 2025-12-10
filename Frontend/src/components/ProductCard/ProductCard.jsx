@@ -1,7 +1,8 @@
 import { ShoppingCart, Star } from "lucide-react"
+import { authAxios, getToken } from "../../utils/auth"
 import "./ProductCard.css"
 
-export default function ProductCard({ book, onNavigate }) {
+export default function ProductCard({ book, onNavigate, currentUser, onCartUpdate }) {
   const discount = book.originalPrice ? Math.round(((book.originalPrice - book.price) / book.originalPrice) * 100) : 0
 
   const renderStars = (rating) => {
@@ -12,6 +13,43 @@ export default function ProductCard({ book, onNavigate }) {
 
   const handleCardClick = () => {
     onNavigate?.("product-detail", book.id)
+  }
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation()
+    
+    if (!currentUser?.id || !getToken()) {
+      onNavigate?.("login")
+      return
+    }
+
+    const stockQuantity =
+      typeof book.stockQuantity === "number"
+        ? book.stockQuantity
+        : typeof book.quantity === "number"
+          ? book.quantity
+          : null
+
+    const isInactive =
+      (book.status && book.status.toString().toLowerCase() !== "active") ||
+      (book.badge && book.badge.toString().toLowerCase() !== "active")
+
+    if (isInactive || (stockQuantity !== null && stockQuantity <= 0)) {
+      alert("Sách đã hết hàng")
+      return
+    }
+
+    try {
+      await authAxios.put(`/cart/${currentUser.id}/book/${book.id}`)
+      if (typeof onCartUpdate === "function") {
+        await onCartUpdate()
+      }
+    } catch (err) {
+      console.error("Failed to add to cart", err)
+      if (err.response?.status === 401) {
+        onNavigate?.("login")
+      }
+    }
   }
 
   return (
@@ -36,7 +74,7 @@ export default function ProductCard({ book, onNavigate }) {
           {book.originalPrice && <span className="price-original">{book.originalPrice.toLocaleString()}đ</span>}
         </div>
 
-        <button className="add-to-cart-btn">
+        <button className="add-to-cart-btn" onClick={handleAddToCart}>
           <ShoppingCart size={18} />
           Thêm vào giỏ
         </button>

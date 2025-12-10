@@ -19,7 +19,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative;
+  gap: 24px;
+  flex-wrap: nowrap;
 }
 
 .header-logo {
@@ -32,6 +33,7 @@
   color: #101828;
   letter-spacing: 1px;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .logo-image {
@@ -39,6 +41,7 @@
   height: 40px;
   object-fit: contain;
   border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .header-nav {
@@ -63,8 +66,8 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  position: absolute;
-  right: 194px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .cart-icon {
@@ -123,7 +126,6 @@
   background-color: #0a0a1a;
 }
 
-/* User Menu Dropdown */
 .user-menu-container {
   position: relative;
 }
@@ -246,7 +248,8 @@
 
 @media (max-width: 768px) {
   .header-container {
-    flex-wrap: wrap;
+    padding: 0 16px 0 16px;
+    gap: 16px;
   }
 
   .header-nav {
@@ -254,8 +257,12 @@
   }
 
   .header-logo {
-    width: 100%;
-    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
+
+  .header-actions {
+    flex-shrink: 0;
+    margin-left: auto;
   }
 
   .search-box {

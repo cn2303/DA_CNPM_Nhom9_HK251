@@ -35,6 +35,26 @@
   margin-bottom: 20px;
 }
 
+.signup-error {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #ffecec;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+  font-size: 14px;
+}
+
+.signup-success {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+  font-size: 14px;
+}
+
 .form-group {
   margin-bottom: 20px;
 }
@@ -104,6 +124,11 @@
 
 .signup-button:hover {
   opacity: 0.9;
+}
+
+.signup-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .signup-footer {

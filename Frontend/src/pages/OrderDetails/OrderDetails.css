@@ -1,0 +1,603 @@
+.order-details-page {
+  background-color: #F9FAFB;
+  padding: 0;
+  min-height: calc(100vh - 146px);
+}
+
+.order-details-container {
+  max-width: 896px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+  box-sizing: border-box;
+}
+
+.breadcrumb {
+  width: 100%;
+  height: 45px;
+  padding: 12px 80px;
+  background: white;
+  border-bottom: 0.8px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-family: 'Arimo', sans-serif;
+  line-height: 20px;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.breadcrumb-link {
+  color: #101828;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  color: #155DFC;
+}
+
+.breadcrumb-separator {
+  color: #4A5565;
+  margin: 0 4px;
+}
+
+.order-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.order-details-header h2 {
+  font-size: 20px;
+  font-weight: 400;
+  color: #0A0A0A;
+  margin: 0;
+  font-family: "Arimo", sans-serif;
+  line-height: 30px;
+}
+
+.order-status {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: capitalize;
+  font-family: "Arimo", sans-serif;
+  line-height: 16px;
+  color: #fff;
+}
+
+.order-status.completed {
+  background: #00C950;
+  color: white;
+}
+
+.order-status.processing {
+  background: #2b7fff;
+  color: white;
+}
+
+.order-status.pending {
+  background: #f0b100;
+  color: white;
+}
+
+.order-status.cancelled {
+  background: #e7000b;
+  color: white;
+}
+
+.order-date {
+  font-size: 16px;
+  color: #4A5565;
+  margin-bottom: 16px;
+  font-family: "Arimo", sans-serif;
+  line-height: 24px;
+}
+
+.order-details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.details-info-card {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.details-info-card .order-details-header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 1px;
+}
+
+.details-info-card .order-date {
+  margin-bottom: 0;
+}
+
+.section-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.section-item .icon {
+  color: #6A7282;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.section-content {
+  flex: 1;
+}
+
+.section-content h4 {
+  font-size: 14px;
+  font-weight: 400;
+  color: #4A5565;
+  margin: 0 0 4px 0;
+  font-family: "Arimo", sans-serif;
+  line-height: 20px;
+}
+
+.section-content p {
+  font-size: 16px;
+  color: #0A0A0A;
+  margin: 0;
+  font-family: "Arimo", sans-serif;
+  line-height: 24px;
+}
+
+.order-summary-card {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.order-summary-card h3 {
+  font-size: 16px;
+  font-weight: 400;
+  color: #0A0A0A;
+  margin: 0 0 16px 0;
+  font-family: "Arimo", sans-serif;
+  line-height: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.summary-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-item {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.item-image {
+  width: 80px;
+  height: 96px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.summary-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-item-name {
+  font-size: 16px;
+  font-weight: 400;
+  color: #0A0A0A;
+  margin: 0;
+  font-family: "Arimo", sans-serif;
+  line-height: 24px;
+}
+
+.summary-item-author {
+  font-size: 14px;
+  color: #4A5565;
+  margin: 0;
+  font-family: "Arimo", sans-serif;
+  line-height: 20px;
+}
+
+.item-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.item-details-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.summary-item-qty {
+  font-size: 14px;
+  color: #6A7282;
+  font-family: "Arimo", sans-serif;
+  line-height: 20px;
+}
+
+.summary-item-price {
+  font-size: 16px;
+  font-weight: 400;
+  color: #E7000B;
+  font-family: "Arimo", sans-serif;
+  line-height: 24px;
+}
+
+.rating-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #0A0A0A;
+  font-family: "Arimo", sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  line-height: 20px;
+}
+
+.rating-button:hover {
+  background: #F9FAFB;
+  border-color: #4A5565;
+}
+
+.rating-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.rated-badge {
+  padding: 8px 16px;
+  background: #F3F4F6;
+  color: #6B7280;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: "Arimo", sans-serif;
+  line-height: 20px;
+  display: inline-block;
+}
+
+.order-pricing {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.pricing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #4A5565;
+  font-family: "Arimo", sans-serif;
+  line-height: 24px;
+  margin-bottom: 8px;
+}
+
+.discount-amount {
+  color: #E7000B;
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  font-weight: 500;
+  color: #0A0A0A;
+  font-family: "Arimo", sans-serif;
+  line-height: 24px;
+  margin-top: 8px;
+}
+
+.total-price {
+  color: #E7000B;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: "Arimo", sans-serif;
+  line-height: 24px;
+}
+
+.back-button {
+  padding: 8px 16px;
+  background: white;
+  color: #0A0A0A;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Arimo", sans-serif;
+  line-height: 20px;
+  align-self: flex-end;
+  margin-top: 24px;
+}
+
+.back-button:hover {
+  background: #F9FAFB;
+  border-color: #4A5565;
+}
+
+.rating-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.rating-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6B7280;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #0A0A0A;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0A0A0A;
+  margin: 0 0 8px 0;
+  font-family: "Arimo", sans-serif;
+  line-height: 30px;
+}
+
+.modal-subtitle {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 0 0 24px 0;
+  font-family: "Arimo", sans-serif;
+  line-height: 20px;
+}
+
+.modal-product {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: #F9FAFB;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.modal-product-image {
+  width: 60px;
+  height: 72px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.modal-product-info {
+  flex: 1;
+}
+
+.modal-product-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0A0A0A;
+  margin: 0 0 4px 0;
+  font-family: "Arimo", sans-serif;
+  line-height: 20px;
+}
+
+.modal-product-author {
+  font-size: 12px;
+  color: #6B7280;
+  margin: 0;
+  font-family: "Arimo", sans-serif;
+  line-height: 16px;
+}
+
+.modal-rating-section {
+  margin-bottom: 24px;
+}
+
+.modal-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0A0A0A;
+  margin-bottom: 12px;
+  font-family: "Arimo", sans-serif;
+  line-height: 20px;
+}
+
+.star-rating {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.star-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star-button:hover {
+  transform: scale(1.1);
+}
+
+.modal-review-section {
+  margin-bottom: 24px;
+}
+
+.modal-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: "Arimo", sans-serif;
+  resize: vertical;
+  min-height: 100px;
+  line-height: 20px;
+  color: #0A0A0A;
+}
+
+.modal-textarea:focus {
+  outline: none;
+  border-color: #155DFC;
+}
+
+.modal-textarea::placeholder {
+  color: #9CA3AF;
+}
+
+.character-count {
+  font-size: 12px;
+  color: #6B7280;
+  text-align: right;
+  margin-top: 4px;
+  font-family: "Arimo", sans-serif;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Arimo", sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  line-height: 20px;
+}
+
+.modal-button.cancel {
+  background: white;
+  color: #0A0A0A;
+  border: 1px solid #D1D5DB;
+}
+
+.modal-button.cancel:hover {
+  background: #F9FAFB;
+  border-color: #9CA3AF;
+}
+
+.modal-button.submit {
+  background: #0A0A0A;
+  color: white;
+  border: 1px solid #0A0A0A;
+}
+
+.modal-button.submit:hover {
+  background: #1F2937;
+}
+
+@media (max-width: 768px) {
+  .order-details-content {
+    gap: 16px;
+  }
+  
+  .summary-item {
+    flex-direction: column;
+  }
+  
+  .item-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .rating-modal {
+    padding: 20px;
+  }
+
+  .star-rating {
+    gap: 4px;
+  }
+
+  .star-button svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-button {
+    width: 100%;
+  }
+}

@@ -3,22 +3,57 @@
 import { useState } from "react"
 import "./Login.css"
 import { Eye, EyeOff } from "lucide-react"
+import { login, setToken, setCurrentUser as setAuthUser, authAxios } from "../../utils/auth"
 
 export default function Login({ onNavigate, setCurrentUser, previousPage }) {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    // Mock authentication
-    if (email === "user@gmail.com" && password === "user") {
-      setCurrentUser({ email, username: "user" })
-      onNavigate(previousPage || "home")
-    } else {
-      setError("Email hoặc mật khẩu không đúng")
+    setError("")
+    setLoading(true)
+
+    try {
+      const { token, userId, role, authenticated } = await login(email.trim(), password)
+      
+      if (!authenticated) {
+        setError("Email hoặc mật khẩu không đúng")
+        setLoading(false)
+        return
+      }
+
+      const { data: userData } = await authAxios.get(`/user/${userId}`)
+      
+      const userInfo = {
+        id: userId,
+        email: userData.email,
+        username: userData.username,
+        fullname: userData.fullname,
+        phone: userData.phone,
+        role: role,
+      }
+      
+      setAuthUser(userInfo)
+      setCurrentUser(userInfo)
+      
+      if (role?.toUpperCase() === 'ADMIN') {
+        onNavigate("admin")
+      } else {
+        onNavigate(previousPage || "home")
+      }
+    } catch (err) {
+      console.error("Login failed", err)
+      if (err.response?.status === 401) {
+        setError("Email hoặc mật khẩu không đúng")
+      } else {
+        setError("Không thể kết nối tới máy chủ. Vui lòng thử lại sau.")
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -62,17 +97,12 @@ export default function Login({ onNavigate, setCurrentUser, previousPage }) {
             Quên mật khẩu?
           </a>
 
-          <button type="submit" className="login-button">
-            Đăng nhập
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>
 
         <div className="divider">Hoặc</div>
-
-        <button className="google-login">
-          <img src="https://services.google.com/fh/files/misc/google_g_icon_download.png" alt="Google" />
-          Đăng nhập với Google
-        </button>
 
         <p className="login-footer">
           Chưa có tài khoản? <a href="/signup">Đăng ký ngay</a>

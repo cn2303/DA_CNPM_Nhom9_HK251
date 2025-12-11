@@ -50,6 +50,15 @@ export function CustomerEdit({ customer, onBack }: CustomerEditProps) {
     return `${address.addressDetail}, ${address.ward}, ${address.city}`;
   };
 
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('vi-VN');
+    } catch {
+      return dateString;
+    }
+  };
+
   return (
     <div className="w-[1440px] h-[1343px] bg-gradient-to-br from-slate-50 to-slate-100 p-12 overflow-auto mx-auto">
       <div className="max-w-5xl mx-auto space-y-8">
@@ -115,7 +124,7 @@ export function CustomerEdit({ customer, onBack }: CustomerEditProps) {
                 <div className="space-y-3">
                   <Label className="text-lg text-muted-foreground">Ngày sinh</Label>
                   <div className="h-12 px-4 flex items-center bg-muted/50 rounded-md border border-input">
-                    <p>{customer.birthday}</p>
+                    <p>{customer.birthday ? formatDate(customer.birthday) : 'N/A'}</p>
                   </div>
                 </div>
               </div>

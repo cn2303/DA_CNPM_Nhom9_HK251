@@ -17,19 +17,36 @@ interface Customer {
   addresses: any[];
 }
 
+interface Order {
+  id: number;
+  status: string;
+  orderDate: string;
+  paymentMethod: string;
+  shippingFee: number;
+  subtotalPrice: number;
+  discountTotal: number;
+  grandTotalPrice: number;
+  user: any;
+  orderAddress: any;
+  voucher: any;
+  orderItemList: any[];
+}
+
 interface CustomersProps {
   customers: Customer[];
+  orders: Order[];
   refreshCustomers: () => Promise<void>;
+  refreshOrders: () => Promise<void>;
   onSaveCustomer: (customer: Customer) => Promise<void>;
 }
 
-export function Customers({ customers, refreshCustomers, onSaveCustomer }: CustomersProps) {
+export function Customers({ customers, orders, refreshCustomers, refreshOrders, onSaveCustomer }: CustomersProps) {
   const navigate = useNavigate();
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const hasLoadedRef = useRef(false);
 
-  // Load customers when component mounts (only once)
+  // Load customers and orders when component mounts (only once)
   useEffect(() => {
     if (hasLoadedRef.current) return;
     
@@ -37,8 +54,8 @@ export function Customers({ customers, refreshCustomers, onSaveCustomer }: Custo
       try {
         console.log('🚀 Customers component: Loading data...');
         setLoading(true);
-        await refreshCustomers();
-        console.log('✅ Customers loaded successfully');
+        await Promise.all([refreshCustomers(), refreshOrders()]);
+        console.log('✅ Customers and orders loaded successfully');
         hasLoadedRef.current = true;
       } catch (err: any) {
         console.error('❌ Error in Customers component:', err);
@@ -49,7 +66,7 @@ export function Customers({ customers, refreshCustomers, onSaveCustomer }: Custo
     };
 
     loadData();
-  }, [refreshCustomers]);
+  }, [refreshCustomers, refreshOrders]);
 
   // Show loading state
   if (loading) {
@@ -64,18 +81,31 @@ export function Customers({ customers, refreshCustomers, onSaveCustomer }: Custo
   }
 
   // Transform customers to match component interface
-  const transformedCustomers = customers.map(customer => ({
-    id: customer.id,
-    name: customer.fullname,
-    email: customer.email,
-    phone: customer.phone,
-    totalOrders: 0, // Mock data - would need to calculate from orders
-    totalSpent: 0, // Mock data - would need to calculate from orders  
-    joinDate: customer.birthday || 'N/A',
-    address: customer.addresses && customer.addresses.length > 0 
-      ? customer.addresses.map(addr => `${addr.addressDetail}, ${addr.ward}, ${addr.city}`).join(' | ')
-      : ''
-  }));
+  const transformedCustomers = customers.map(customer => {
+    // Calculate customer stats from orders
+    const customerOrders = orders.filter(order => order.user?.id === customer.id);
+    const totalOrders = customerOrders.length;
+    
+    // Only count paid/completed orders for totalSpent
+    const paidOrders = customerOrders.filter(order => {
+      const status = order.status.toLowerCase();
+      return status === 'processing' || status === 'completed';
+    });
+    const totalSpent = paidOrders.reduce((sum, order) => sum + (order.grandTotalPrice || 0), 0);
+    
+    return {
+      id: customer.id,
+      name: customer.fullname,
+      email: customer.email,
+      phone: customer.phone,
+      totalOrders: totalOrders,
+      totalSpent: totalSpent,
+      joinDate: customer.birthday || 'N/A',
+      address: customer.addresses && customer.addresses.length > 0 
+        ? customer.addresses.map(addr => `${addr.addressDetail}, ${addr.ward}, ${addr.city}`).join(' | ')
+        : ''
+    };
+  });
 
   console.log('🔄 Transformed customers for display:', transformedCustomers);
   console.log('📈 Total transformed:', transformedCustomers?.length || 0);
@@ -84,6 +114,24 @@ export function Customers({ customers, refreshCustomers, onSaveCustomer }: Custo
   if (selectedCustomerId !== null) {
     const selectedCustomer = customers.find(customer => customer.id === selectedCustomerId);
     if (selectedCustomer) {
+      // Calculate customer stats from orders
+      const customerOrders = orders.filter(order => order.user?.id === selectedCustomer.id);
+      const totalOrders = customerOrders.length;
+      
+      // Only count paid/completed orders for totalSpent
+      const paidOrders = customerOrders.filter(order => {
+        const status = order.status.toLowerCase();
+        return status === 'processing' || status === 'completed';
+      });
+      const totalSpent = paidOrders.reduce((sum, order) => sum + (order.grandTotalPrice || 0), 0);
+      
+      console.log('📊 Customer edit stats:', {
+        customerId: selectedCustomer.id,
+        totalOrders: totalOrders,
+        paidOrders: paidOrders.length,
+        totalSpent: totalSpent
+      });
+      
       // Transform customer data to match CustomerEdit interface
       const transformedCustomer = {
         id: selectedCustomer.id,
@@ -91,8 +139,8 @@ export function Customers({ customers, refreshCustomers, onSaveCustomer }: Custo
         email: selectedCustomer.email,
         phone: selectedCustomer.phone,
         avatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&h=400&fit=crop',
-        totalOrders: 0,
-        totalSpent: 0,
+        totalOrders: totalOrders,
+        totalSpent: totalSpent,
         birthday: selectedCustomer.birthday || 'N/A',
         addresses: selectedCustomer.addresses || []
       };

@@ -90,7 +90,7 @@ export function OrderDetail({ order, onBack, onSave, onViewCustomer }: OrderDeta
             <ArrowLeft className="size-5" />
             Về lịch sử đơn hàng
           </Button>
-          <Badge variant={getStatusVariant(order.status)} className="text-base px-4 py-2 bg-white">
+          <Badge variant={getStatusVariant(order.status)} className="text-base px-4 py-2">
             {getStatusLabel(order.status)}
           </Badge>
         </div>

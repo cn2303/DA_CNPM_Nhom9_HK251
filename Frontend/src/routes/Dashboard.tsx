@@ -37,9 +37,10 @@ interface Book {
 
 interface DashboardProps {
   books: Book[];
+  handleLogout?: () => void;
 }
 
-export function Dashboard({ books }: DashboardProps) {
+export function Dashboard({ books, handleLogout }: DashboardProps) {
   const navigate = useNavigate();
 
   return (
@@ -51,6 +52,7 @@ export function Dashboard({ books }: DashboardProps) {
       onBookClick={(bookId) => navigate(`/book/${bookId}`)}
       onAddBook={() => navigate('/book/add')}
       onDeleteBook={() => navigate('/book/delete')}
+      onLogout={handleLogout}
     />
   );
 }

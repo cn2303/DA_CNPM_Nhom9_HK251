@@ -4,7 +4,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { ArrowLeft, Trash2, Save } from 'lucide-react';
+import { ArrowLeft, Trash2, Save, ChevronDown, ChevronUp } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Separator } from './ui/separator';
 import { Checkbox } from './ui/checkbox';
@@ -67,6 +67,7 @@ export function BookEdit({ book, onBack, onSave, onDelete }: BookEditProps) {
   const [editedBook, setEditedBook] = useState<Book>(book);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+  const [showOriginalDetails, setShowOriginalDetails] = useState(true);
 
   // Load categories from API and initialize selected categories
   useEffect(() => {
@@ -146,6 +147,122 @@ export function BookEdit({ book, onBack, onSave, onDelete }: BookEditProps) {
             </AlertDialogContent>
           </AlertDialog>
         </div>
+
+        {/* Original Book Details - Collapsible */}
+        <Card className="bg-blue-50/50 border-blue-200">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl text-blue-900">Thông tin hiện tại của sách</CardTitle>
+                <p className="text-sm text-blue-700 mt-1">Xem chi tiết thông tin trước khi chỉnh sửa</p>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setShowOriginalDetails(!showOriginalDetails)}
+                className="flex items-center gap-2"
+              >
+                {showOriginalDetails ? (
+                  <>
+                    <ChevronUp className="size-4" />
+                    Ẩn
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="size-4" />
+                    Hiện
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+          {showOriginalDetails && (
+            <CardContent className="space-y-6 px-8 pb-8">
+              <div className="grid md:grid-cols-3 gap-6">
+                {/* Basic Info */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-blue-900">Thông tin cơ bản</h4>
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">Tên sách</p>
+                      <p className="font-medium">{book.title}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Tác giả</p>
+                      <p className="font-medium">{book.author}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Mô tả</p>
+                      <p className="font-medium line-clamp-3">{book.description}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Publishing Info */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-blue-900">Xuất bản</h4>
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">Nhà xuất bản</p>
+                      <p className="font-medium">{book.publisher}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Năm xuất bản</p>
+                      <p className="font-medium">{book.publicationYear}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">ISBN</p>
+                      <p className="font-medium">{book.isbn || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Ngôn ngữ</p>
+                      <p className="font-medium">{book.language || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Quốc gia</p>
+                      <p className="font-medium">{book.nation || 'N/A'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Inventory & Categories */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-blue-900">Kho & Thể loại</h4>
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">Số lượng</p>
+                      <p className="font-medium">{book.quantity}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Giá</p>
+                      <p className="font-medium">{book.price.toLocaleString('vi-VN')}₫</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Trạng thái</p>
+                      <p className="font-medium">{book.status}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Số trang</p>
+                      <p className="font-medium">{book.numPage}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Đánh giá</p>
+                      <p className="font-medium">{book.averageRating} ⭐</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Thể loại</p>
+                      <p className="font-medium">
+                        {book.categories && book.categories.length > 0
+                          ? book.categories.map(bc => bc.category.name).join(', ')
+                          : 'Chưa có'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          )}
+        </Card>
 
         <Card>
           <CardHeader className="pb-8">

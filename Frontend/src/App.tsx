@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Dashboard } from './routes/Dashboard';
 import { EditBook } from './routes/EditBook';
 import { AddBook } from './routes/AddBook';
@@ -7,83 +7,13 @@ import { DeleteBook } from './routes/DeleteBook';
 import { Orders } from './routes/Orders';
 import { Vouchers } from './routes/Vouchers';
 import { Customers } from './routes/Customers';
+import { Login } from './components/Login';
 import { Toaster } from './components/ui/sonner';
-import { bookAPI, userAPI, orderAPI, voucherAPI } from './services/api';
+import { bookAPI, userAPI, orderAPI, voucherAPI, authAPI } from './services/api';
+import { authService } from './services/auth';
+import type { LoginResponse } from './services/auth';
 
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface BookCategory {
-  id: {
-    bookId: number;
-    categoryId: number;
-  };
-  category: Category;
-}
-
-interface Book {
-  id: number;
-  isbn: string | null;
-  title: string;
-  language: string | null;
-  author: string;
-  publisher: string;
-  description: string;
-  status: string;
-  size: string;
-  type: string;
-  price: number;
-  quantity: number;
-  publicationYear: number;
-  imageUrl: string | null;
-  categories: BookCategory[];
-  numPage: number;
-  averageRating: number;
-  nation: string | null;
-}
-
-interface Voucher {
-  code: string;
-  startDate: string;
-  endDate: string;
-  percent: number;
-  maxValue: number;
-  minValue: number;
-  quantity: number;
-  description: string;
-  user: {
-    id: number;
-  };
-}
-
-interface Customer {
-  id: number;
-  fullname: string;
-  email: string;
-  username: string;
-  password: string;
-  phone: string;
-  birthday: string;
-  role: string;
-  addresses: any[];
-}
-
-interface Order {
-  id: number;
-  status: string;
-  orderDate: string;
-  paymentMethod: string;
-  shippingFee: number;
-  subtotalPrice: number;
-  discountTotal: number;
-  grandTotalPrice: number;
-  user: any;
-  orderAddress: any;
-  voucher: any;
-  orderItemList: any[];
-}
+// ... 保持所有接口定义不变 ...
 
 export default function App() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -92,6 +22,39 @@ export default function App() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check authentication on mount
+  useEffect(() => {
+    const authState = authService.getAuthState();
+    console.log('🔐 Auth state on mount:', authState);
+    setIsAuthenticated(authState.isAuthenticated);
+  }, []);
+
+  // Handle login success
+  const handleLoginSuccess = (token: string, role: string, userId: number) => {
+    const loginResponse: LoginResponse = {
+      token,
+      role,
+      userId,
+      authenticated: true
+    };
+    
+    authService.saveAuth(loginResponse);
+    setIsAuthenticated(true);
+    console.log('✅ User logged in:', { role, userId });
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    authService.clearAuth();
+    setIsAuthenticated(false);
+    setBooks([]);
+    setVouchers([]);
+    setCustomers([]);
+    setOrders([]);
+    console.log('👋 User logged out');
+  };
 
   // Function to refresh books only
   const refreshBooks = async () => {
@@ -276,24 +239,43 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <AppContent 
-        books={books}
-        vouchers={vouchers}
-        customers={customers}
-        orders={orders}
-        refreshBooks={refreshBooks}
-        refreshVouchers={refreshVouchers}
-        refreshCustomers={refreshCustomers}
-        refreshOrders={refreshOrders}
-        handleAddBook={handleAddBook}
-        handleSaveBook={handleSaveBook}
-        handleDeleteBook={handleDeleteBook}
-        handleAddVoucher={handleAddVoucher}
-        handleSaveVoucher={handleSaveVoucher}
-        handleDeleteVoucher={handleDeleteVoucher}
-        handleSaveCustomer={handleSaveCustomer}
-        handleSaveOrderStatus={handleSaveOrderStatus}
-      />
+      <Routes>
+        {/* 公开路由 - 登录页面 */}
+        <Route path="/login" element={
+          !isAuthenticated ? (
+            <Login onLoginSuccess={handleLoginSuccess} />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        } />
+        
+        {/* 受保护的路由 */}
+        <Route path="/*" element={
+          isAuthenticated ? (
+            <AppContent 
+              books={books}
+              vouchers={vouchers}
+              customers={customers}
+              orders={orders}
+              refreshBooks={refreshBooks}
+              refreshVouchers={refreshVouchers}
+              refreshCustomers={refreshCustomers}
+              refreshOrders={refreshOrders}
+              handleAddBook={handleAddBook}
+              handleSaveBook={handleSaveBook}
+              handleDeleteBook={handleDeleteBook}
+              handleAddVoucher={handleAddVoucher}
+              handleSaveVoucher={handleSaveVoucher}
+              handleDeleteVoucher={handleDeleteVoucher}
+              handleSaveCustomer={handleSaveCustomer}
+              handleSaveOrderStatus={handleSaveOrderStatus}
+              handleLogout={handleLogout}
+            />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } />
+      </Routes>
       <Toaster />
     </BrowserRouter>
   );
@@ -317,6 +299,7 @@ function AppContent({
   handleDeleteVoucher,
   handleSaveCustomer,
   handleSaveOrderStatus,
+  handleLogout,
 }: {
   books: Book[];
   vouchers: Voucher[];
@@ -334,6 +317,7 @@ function AppContent({
   handleDeleteVoucher: (voucherCode: string) => Promise<void>;
   handleSaveCustomer: (updatedCustomer: Customer) => Promise<void>;
   handleSaveOrderStatus: (orderId: number, newStatus: string) => Promise<void>;
+  handleLogout: () => void;
 }) {
   const location = useLocation();
   const previousPathRef = useRef<string>('');
@@ -348,13 +332,13 @@ function AppContent({
 
   return (
     <Routes>
-      <Route path="/" element={<Dashboard books={books} />} />
+      <Route path="/" element={<Dashboard books={books} handleLogout={handleLogout} />} />
       <Route path="/book/:id" element={<EditBook books={books} onSave={handleSaveBook} onDelete={handleDeleteBook} />} />
       <Route path="/book/add" element={<AddBook onAdd={handleAddBook} />} />
       <Route path="/book/delete" element={<DeleteBook books={books} onDelete={handleDeleteBook} />} />
       <Route path="/orders" element={<Orders orders={orders} customers={customers} refreshOrders={refreshOrders} refreshCustomers={refreshCustomers} onSaveOrderStatus={handleSaveOrderStatus} />} />
       <Route path="/vouchers" element={<Vouchers vouchers={vouchers} refreshVouchers={refreshVouchers} onAddVoucher={handleAddVoucher} onSaveVoucher={handleSaveVoucher} onDeleteVoucher={handleDeleteVoucher} />} />
-      <Route path="/customers" element={<Customers customers={customers} refreshCustomers={refreshCustomers} onSaveCustomer={handleSaveCustomer} />} />
+      <Route path="/customers" element={<Customers customers={customers} orders={orders} refreshCustomers={refreshCustomers} refreshOrders={refreshOrders} onSaveCustomer={handleSaveCustomer} handleLogout={handleLogout} />} />
     </Routes>
   );
 }

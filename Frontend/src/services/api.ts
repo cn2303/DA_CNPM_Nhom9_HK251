@@ -1,12 +1,42 @@
+import { authService } from './auth';
+import type { LoginRequest, LoginResponse } from './auth';
+
 const API_BASE_URL = 'http://localhost:8080';
 
 // Helper function for API calls
 async function apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {
   try {
+    // Get auth data if available
+    const token = authService.getToken();
+    const userId = authService.getUserId();
+    const role = authService.getRole();
+    
+    // Build headers with auth information
+    const authHeaders: Record<string, string> = {};
+    if (token) {
+      authHeaders['Authorization'] = `Bearer ${token}`;
+    }
+    if (userId !== null) {
+      authHeaders['X-User-Id'] = userId.toString();
+    }
+    if (role) {
+      authHeaders['X-User-Role'] = role;
+    }
+    
+    // Log auth headers for debugging
+    if (token) {
+      console.log('🔑 API Call:', endpoint, {
+        hasToken: !!token,
+        userId: userId,
+        role: role
+      });
+    }
+    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        ...authHeaders,
         ...options?.headers,
       },
     });
@@ -88,7 +118,10 @@ export const userAPI = {
     console.log('🌐 Calling GET /user');
     return apiCall<any[]>('/user');
   },
-  getById: (id: number) => apiCall<any>(`/user/${id}`),
+  getById: (id: number) => {
+    console.log('🌐 Calling GET /user/' + id);
+    return apiCall<any>(`/user/${id}`);
+  },
   create: (user: any) => apiCall<any>('/user', {
     method: 'POST',
     body: JSON.stringify(user),
@@ -218,4 +251,28 @@ export const reviewAPI = {
   delete: (id: number) => apiCall<void>(`/review/${id}`, {
     method: 'DELETE',
   }),
+};
+
+// Auth API
+export const authAPI = {
+  login: async (credentials: LoginRequest): Promise<LoginResponse> => {
+    console.log('🔐 Calling POST /auth/login (no auth headers)');
+    // Login endpoint should NOT send auth headers (public endpoint)
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Login failed');
+    }
+    
+    const data = await response.json();
+    console.log('✅ Login successful:', { userId: data.userId, role: data.role });
+    return data;
+  },
 };

@@ -47,9 +47,10 @@ interface AdminDashboardProps {
   onBookClick?: (bookId: number) => void;
   onAddBook?: () => void;
   onDeleteBook?: () => void;
+  onLogout?: () => void;
 }
 
-export function AdminDashboard({ books, onViewOrderHistory, onViewVoucherInventory, onViewCustomerManagement, onBookClick, onAddBook, onDeleteBook }: AdminDashboardProps) {
+export function AdminDashboard({ books, onViewOrderHistory, onViewVoucherInventory, onViewCustomerManagement, onBookClick, onAddBook, onDeleteBook, onLogout }: AdminDashboardProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const booksPerPage = 12; // Show 12 books per page (4 rows x 3 columns)
@@ -118,7 +119,7 @@ export function AdminDashboard({ books, onViewOrderHistory, onViewVoucherInvento
               Thêm sách
             </Button>
             <div className="h-8 w-px bg-border mx-2" />
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button variant="outline" className="flex items-center gap-2" onClick={onLogout}>
               <LogOut className="size-4" />
               Đăng xuất
             </Button>

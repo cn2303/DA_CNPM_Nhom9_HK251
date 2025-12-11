@@ -137,7 +137,20 @@ export function Orders({ orders, customers, refreshOrders, refreshCustomers, onS
       // Calculate customer stats
       const customerOrders = orders.filter(order => order.user?.id === selectedCustomerDetail.id);
       const totalOrders = customerOrders.length;
-      const totalSpent = customerOrders.reduce((sum, order) => sum + (order.grandTotalPrice || 0), 0);
+      
+      // Only count paid/completed orders for totalSpent
+      const paidOrders = customerOrders.filter(order => {
+        const status = order.status.toLowerCase();
+        return status === 'processing' || status === 'completed';
+      });
+      const totalSpent = paidOrders.reduce((sum, order) => sum + (order.grandTotalPrice || 0), 0);
+      
+      console.log('📊 Customer stats:', {
+        customerId: selectedCustomerDetail.id,
+        totalOrders: totalOrders,
+        paidOrders: paidOrders.length,
+        totalSpent: totalSpent
+      });
       
       // Transform customer data to match CustomerView interface
       const transformedCustomer = {

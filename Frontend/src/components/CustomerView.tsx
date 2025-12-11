@@ -125,7 +125,7 @@ export function CustomerView({ customer, onBack }: CustomerViewProps) {
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground">Ngày sinh</p>
                   <div className="h-12 px-4 flex items-center bg-muted/50 rounded-md border border-input">
-                    <p>{formatDate(customer.birthday)}</p>
+                    <p>{customer.birthday ? formatDate(customer.birthday) : 'N/A'}</p>
                   </div>
                 </div>
               </div>
